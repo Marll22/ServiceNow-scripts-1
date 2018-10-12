@@ -1,0 +1,17 @@
+(function executeRule(current, previous /*null when async*/) {
+
+	calculateAge();
+
+function calculateAge()
+
+{
+
+var datedif = gs.dateDiff(current.sys_created_on.getDisplayValue(), gs.nowDateTime(),false);
+
+current.u_ageing = datedif;
+
+current.update();
+
+}
+
+})(current, previous);
