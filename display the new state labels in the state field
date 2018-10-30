@@ -1,0 +1,61 @@
+//To automatically update the state field values from old state labels to new state labels,
+customize and then run the following sample script:
+
+updateStates();
+function updateStates() {
+function hasApprovers(changeGr) {
+var approverGr = new GlideRecord("sysapproval_approver");
+approverGr.addQuery('sysapproval', changeGr.getUniqueValue());
+
+approverGr.query();
+return approverGr.getRowCount() > 0;
+}
+function hasRunningWorkflows(changeGr) {
+var workflow = new Workflow();
+var workflowGr = workflow.getRunningFlows(changeGr);
+var hasRunningFlows = workflowGr.getRowCount() > 0;
+return hasRunningFlows;
+}
+// Old State Model
+var PENDING = '-5';
+var OPEN = '1';
+var CLOSED_COMPLETE = '3';
+var CLOSED_INCOMPLETE = '4';
+var CLOSED_SKIPPED = '7';
+// New State Model
+var NEW = '-5';
+var ASSESS = '-4';
+var AUTHORIZE = '-3';
+var SCHEDULED = '-2';
+var IMPLEMENT = '-1';
+var REVIEW = '0';
+var CLOSED = '3';
+var CANCELLED = '4';
+// Find all change requests
+var record = new GlideRecord('change_request');
+record.query();
+// Update state from old value to new value
+while (record.next()) {
+switch(record.getValue('state')) {
+case OPEN:
+if (!hasRunningWorkflows(record) && !hasApprovers(record))
+record.state = NEW;
+break;
+case CLOSED_COMPLETE:
+record.state = CLOSED;
+record.close_code = "successful";
+break;
+case CLOSED_SKIPPED:
+record.state = CANCELLED;
+record.close_code = "unsuccessful";
+break;
+case CLOSED_INCOMPLETE:
+record.state = CLOSED;
+record.close_code = "successful_issues";
+break;
+}
+record.autoSysFields(false);
+record.setWorkflow(false);
+record.update();
+}
+}
