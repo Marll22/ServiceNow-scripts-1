@@ -10,20 +10,92 @@ comp.orderBy('sys_class_name');
 comp.orderBy('manufacturer.name');
 comp.orderBy('model_id.name');
 comp.query();
+
+var costCenterNamesList = []; // list of Names present in cost center table (1-D array)
+var costCenterList = []; //object array of aggregate records(list of all the data that came back through SUM.
+
+
 while(comp.next()){
 		
 	var className = comp.sys_class_name.getDisplayValue();
 	var name= comp.cost_center.getDisplayValue();
 	name= JSUtil.nil(name)?'NO NAME':name; //will populate NO NAME if there is no cost center present
 	var deviceCount = comp.getAggregate('COUNT','cost_center');
-	var devicePrice = comp.getAggregate('SUM','cost');
+	var cost = comp.getAggregate('SUM','cost');
 	var manufacturer = comp.getValue('manufacturer.name');
 	var modelID = comp.getValue('model_id.name');
 
 	//only print cost who have data in them
-	if(parseFloat(devicePrice).toFixed(2)>0.00){
+	if(parseFloat(cost).toFixed(2)>0.00){
 	
-	gs.info('-->cost center: {0}, class : {1}, count : {2}  , cost : {3}  ,modelID: {4} manufacturer : {5}',
-			[name,className, deviceCount,devicePrice,modelID,manufacturer]);
+	//gs.info('-->cost center: {0}, class : {1}, count : {2}  , cost : {3}  ,modelID: {4} manufacturer : {5}',
+	//		[name,className, deviceCount,devicePrice,modelID,manufacturer]);
+		costCenterNamesList.push(name); //this will build the list of Names
+	costCenter = {};
+	
+	costCenter.name = name;
+	costCenter.cost = cost;
+	costCenter.className = className;
+	costCenter.manufacturer = manufacturer;
+	costCenter.modelID = modelID;
+	costCenter.deviceCount = deviceCount;
+	costCenter.cost=cost;
+	costCenterList.push(costCenter);
+		
+		}
+	
+	
+        costCenterNamesList = new ArrayUtil().unique(costCenterNamesList);
+	    gs.info('-->count of centers :'+ costCenterList.length);
+		gs.info('-->count of names :'+ costCenterNamesList.length);
+	
+	//put all above data returned to a billing table
+	
+
+	var costCenterRecords = new GlideRecord('cmn_cost_center');
+	costCenterRecords.addQuery('name','IN',costCenterNamesList);
+	costCenterRecords.query();
+	
+    var costCenterInfo = [];
+	
+	while(costCenterRecords.next()){
+		
+		var costCenter = {};
+		costCenter.name = costCenterRecords.getValue('name');
+		costCenter.account_number = costCenterRecords.getValue('account_number');
+		costCenter.manager = costCenterRecords.manager.getDisplayValue();
+		costCenterInfo.push(costCenter);
+		
 	}
+	
+	for (var item in costCenterList){
+		
+		var costCenter = costCenterList[item];
+		var foundCostCenter = findObject(costCenter.name, costCenterInfo,'name');
+		if(JSUtil.notNil(foundCostCenter)){
+			costCenter.account_number = foundCostCenter.account_number;
+			costCenter.manager = foundCostCenter.manager;
+			
+		var message = '--> CostCenter:{0}\nclass:{1}\nmanufacturer:{2}\nModel:{3}\nCount:{4}';
+			gs.info(message,
+					[costCenter.name,
+					costCenter.className,
+					costCenter.manufacturer,
+					costCenter.modelID,
+					costCenter.deviceCount,
+					costCenter.manager,
+					costCenter.account_number,
+					parseFloat(costCenter.cost).toFixed(2)]);
+			
+			
+		}
+	}
+	
+	function findObject(source, targetList, field){
+		return targetList.filter(function (obj){
+			return obj[field]===source;
+		})[0];
+	}
+	
 }
+
