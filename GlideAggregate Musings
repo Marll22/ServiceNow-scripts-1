@@ -1,0 +1,29 @@
+var comp = new GlideAggregate('cmdb_ci_computer');
+comp.groupBy('cost_center');
+comp.groupBy('sys_class_name');
+comp.groupBy('manufacturer.name');
+comp.groupBy('model_id.name');
+comp.addAggregate('COUNT','cost_center');
+comp.addAggregate('SUM','cost');
+comp.orderBy('cost_center');
+comp.orderBy('sys_class_name');
+comp.orderBy('manufacturer.name');
+comp.orderBy('model_id.name');
+comp.query();
+while(comp.next()){
+		
+	var className = comp.sys_class_name.getDisplayValue();
+	var name= comp.cost_center.getDisplayValue();
+	name= JSUtil.nil(name)?'NO NAME':name; //will populate NO NAME if there is no cost center present
+	var deviceCount = comp.getAggregate('COUNT','cost_center');
+	var devicePrice = comp.getAggregate('SUM','cost');
+	var manufacturer = comp.getValue('manufacturer.name');
+	var modelID = comp.getValue('model_id.name');
+
+	//only print cost who have data in them
+	if(parseFloat(devicePrice).toFixed(2)>0.00){
+	
+	gs.info('-->cost center: {0}, class : {1}, count : {2}  , cost : {3}  ,modelID: {4} manufacturer : {5}',
+			[name,className, deviceCount,devicePrice,modelID,manufacturer]);
+	}
+}
