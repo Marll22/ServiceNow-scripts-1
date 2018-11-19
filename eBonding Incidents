@@ -1,0 +1,71 @@
+// Below is the UI Action Script
+
+/* find attachment*/
+var sa = new GlideRecord('sys_attachment');
+sa.addQuery('table_name','incident');
+sa.addQuery('table_sys_id',current.sys_id);
+sa.query();
+
+var b64attachment = "";
+
+if(sa.next()){
+	
+	//intiate GlideSysAttachmentInputStream class (undocumented) and pass the sys_id of attachment to its constructor
+	var attachmentIS = new GlideSysAttachmentInputStream(sa.sys_id);
+	
+	//Convert that jive into a string using Java/Rhino. 
+	
+	var btyearrayOS = new Packages.java.io.ByteArrayOutputStream();
+	
+	/*write the byte stream*/
+	attachmentIS.writeTo(btyearrayOS);
+	
+	/*encode Attachment file*/
+	b64attachment = GlideBase64.encode(btyearrayOS.toByteArray());
+	
+	
+	// eBond the ticket
+	
+	 var s = new sn_ws.SOAPMessageV2('Send attachments via Web service', 'insert');
+
+//override authentication profile 
+//authentication type ='basic'
+//r.setAuthentication(authentication type,profile name);
+
+//set a MID server name if one wants to run the message on MID
+//r.setMIDServer('MY_MID_SERVER');
+
+//if the message is configured to communicate through ECC queue, either
+//by setting a MID server or calling executeAsync, one needs to set skip_sensor
+//to true. Otherwise, one may get an intermittent error that the response body is null
+//r.setEccParameter('skip_sensor', true);
+
+ s.setStringParameterNoEscape('insert.u_short_description', current.getValue('short_description'));
+ s.setStringParameterNoEscape('insert.u_description',current.getValue('description') + ' '+' This is a eBond Ticket');
+s.setStringParameterNoEscape('insert.u_number',current.getValue('number'));
+ s.setStringParameterNoEscape('insert.u_attachment1_name',sa.getValue('file_name'));
+ s.setStringParameterNoEscape('insert.u_caller', current.getDisplayValue('caller_id'));
+ s.setStringParameterNoEscape('insert.u_attachment1', b64attachment);
+s.executeAsync();
+	gs.addInfoMessage('This incident record has been eBonded to the 3rd Party ITSM System');
+	gs.log('The incident record '+current.getValue('number')+' has been eBonded to the 3rd Party ITSM System');
+	
+	
+	var s = new sn_ws.SOAPMessageV2('Send attachments via Web service', 'get');
+
+
+ s.setStringParameterNoEscape('get.u_number',current.setValue('u_vendor_ticket'));
+ 
+}
+
+
+
+// Below block of code does the same thing as Submit button do.
+
+current.insert();
+			gs.include('ActionUtils');
+			var au = new ActionUtils();
+			au.postInsert(current);
+
+action.setRedirectURL(current);
+	
