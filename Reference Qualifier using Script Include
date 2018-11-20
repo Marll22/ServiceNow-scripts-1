@@ -1,0 +1,13 @@
+//How to create Reference Qualifier using Script Include for the Location field on an incident  
+
+SCRIPT INCLUDE - NorthAmericaLocationCalifornia
+
+function NorthAmericaLocationCalifornia(){
+        if(current.sys_class_name=="Incident"){    //we want to limit the RefQual to incident table
+        
+        var answer = "state=CA";
+        }
+        return answer;
+        }
+        
+ Location field > Personalize Dictionary > Reference qual field - (enter the JS call to Script Include) javascript:NorthAmericaLocationCalifornia()
