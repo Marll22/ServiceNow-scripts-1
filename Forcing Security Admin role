@@ -1,4 +1,4 @@
-// Make a before BR that runs on insert, udpate and query.
+// Make a before BR that runs on insert, udpate and query.This forces the security admin role even if user does not have.
 
 (function executeRule(current, previous /*null when async*/) {
 
