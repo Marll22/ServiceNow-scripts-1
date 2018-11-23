@@ -1,0 +1,13 @@
+//Create a UI Action with the Action name "impersonateUser" that will run on client side. Now 
+//Condition : gs.hasRole('admin')&&current.active==true&&current.locked_out==false
+//On-Click : impersonateUser()
+
+
+
+
+
+function impersonateUser(){
+   if(confirm('Wanna login as this Honey-Bunny?')){
+      top.location.href = 'ui_page_process.do?sys_id=b071b5dc0a0a0a7900846d21db8e4db6&sys_user='+ g_form.getUniqueValue();
+   }
+}
