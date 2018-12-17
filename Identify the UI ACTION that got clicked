@@ -1,0 +1,7 @@
+//client side code
+
+var formName = g_form.tableName + ".do";
+//Get the form
+var form = gel(formName);
+var action = form.sys_action.value; //Get the 'Action name' value from the clicked UI Action
+alert('You pressed ' + action);
