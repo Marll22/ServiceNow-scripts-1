@@ -1,0 +1,27 @@
+gs.include('validators');
+
+if (current.getTableName() == "incident") {
+	gs.log("notify " +email.subject);
+	var a = email.subject;
+if(a.includes("Fwd:")|| a.includes("fwd:")){
+		current.description = "This is a FW type ";
+		current.comments = "forwarded from: " + email.origemail + "\n\n" + email.body_text;
+}
+	else{
+		
+		current.description = "This is a RE type ";
+		current.comments = "reply from: " + email.origemail + "\n\n" + email.body_text;
+		
+	}
+	
+	
+	if (gs.hasRole("itil")) {
+		if (email.body.assign != undefined)
+			current.assigned_to = email.body.assign;
+		
+		if (email.body.priority != undefined && isNumeric(email.body.priority))
+			current.priority = email.body.priority;
+	}
+	
+	current.update();
+}
