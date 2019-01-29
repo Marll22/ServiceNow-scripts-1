@@ -1,0 +1,44 @@
+//Automatically pic assignee of incident who has lowest number of tickets assigned.
+
+//business rule. Modify it to run as a scheduled job , etc according to the requirement
+
+
+                var userList = [];
+                var count = [];
+                // Add your code here
+                var grMember = new GlideRecord('sys_user_grmember');
+                grMember.addQuery('group', current.assignment_group);
+                grMember.query();
+                
+                
+                while (grMember.next()) {
+                                userList.push(grMember.getValue('user'));
+                                
+                                }
+                
+                for (var i = 0; i < userList.length; i++) {
+                                
+                                var gr = new GlideRecord('sn_customerservice_case');
+                                gr.addQuery('assignment_group', current.assignment_group);
+                                gr.addQuery('assigned_to', userList[i]);
+                                gr.query();
+                                count[i]= gr.getRowCount();
+                                
+                                
+                }
+                
+                var lowValue = 100000;
+                var lowUser;
+                for (var j = 0; j < userList.length; j++) {
+                                
+                                if (count[j] < lowValue) {
+                                                
+                                                
+                                                lowValue = count[j];
+                                                
+                                                
+                                                lowUser = userList[j];
+                                }
+                }
+                
+                current.assigned_to = lowUser;
