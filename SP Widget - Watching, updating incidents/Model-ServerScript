@@ -1,0 +1,24 @@
+(function() {
+ 
+data.incidents = [];
+	
+	
+	var a = new GlideRecord('incident');
+	a.setLimit(10);
+	a.addActiveQuery();
+	a.orderByDesc('sys_updated_on')
+	a.query();
+	
+	while(a.next()){
+		
+		var inc = {};
+		inc.number = a.getDisplayValue('number');
+		inc.sd = a.getDisplayValue('short_description');
+		inc.sysid = a.getUniqueValue('sys_id');
+		inc.caller = a.getValue('caller_id').toString();
+		inc.updated = a.getValue('sys_updated_on');
+		data.incidents.push(inc);
+		
+	}
+	
+})();
