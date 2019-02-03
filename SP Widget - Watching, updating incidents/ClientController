@@ -1,0 +1,52 @@
+function($scope , spUtil,$http) {
+  /* widget controller */
+  var c = this;
+	
+	$scope.orderField = "number";
+	$scope.changeSort = function(field){
+		
+		$scope.orderField = field;
+		
+	}
+		//this makes the UI Watch the data table and update on changes
+		spUtil.recordWatch($scope,"incident","",function(name,data){
+			
+			spUtil.update($scope);
+			
+		});
+	$scope.edit = function(instance){
+		
+		$scope.editingRecord = angular.copy(instance);
+		
+	}
+	
+	$scope.reset = function(){
+		$scope.editingRecord = null
+	}
+	
+	$scope.save = function(){
+		console.log('in save with '+$scope.editingRecord.sysid)
+		//$scope taking on two parameters
+		$scope.writeIncident($scope.editingRecord.sysid,
+												 {
+												 'short_description': $scope.editingRecord.sd
+												 });
+			$scope.reset();
+	}
+	//User Table API to PUT for a record of sys_id. Whatever JSON is passed
+	//in as data, that will be the update
+	$scope.writeIncident = function(sys_id, data){
+		console.log('in write with '+sys_id)
+		console.log(data);
+		$http({
+			
+			method : 'PUT',
+			url : 'api/now/table/incident/'+ sys_id,
+			headers : {'Content-Type' : 'application/json'},
+			data:  data
+			
+		});
+		
+	};
+
+}
