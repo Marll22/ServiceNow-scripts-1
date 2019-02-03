@@ -15,7 +15,7 @@ data.incidents = [];
 		inc.number = a.getDisplayValue('number');
 		inc.sd = a.getDisplayValue('short_description');
 		inc.sysid = a.getUniqueValue('sys_id');
-		inc.caller = a.getValue('caller_id').toString();
+		inc.caller = a.getValue('caller_id');
 		inc.updated = a.getValue('sys_updated_on');
 		data.incidents.push(inc);
 		
