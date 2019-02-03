@@ -13,7 +13,7 @@
   <th><input type="button" value="Caller SysID" ng-click="changeSort('sys_id')"></th>
   <th><input type="button" value="Updated" ng-click="changeSort('sys_updated_on')"></th>
   </tr>
-  <tr ng-repeat="inci in data.incidents | orderBy:orderField | filter:searchText"> 
+  <tr ng-repeat="inci in data.incidents | orderBy:orderField:orderReverse | filter:searchText"> 
   
     <td> {{inci.number}}</td>
   <td ng-if="inci.sysid == editingRecord.sysid"><input type="text" ng-model="editingRecord.sd"></td>
