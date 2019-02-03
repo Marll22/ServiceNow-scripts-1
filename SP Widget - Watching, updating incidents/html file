@@ -1,0 +1,37 @@
+//HTML
+
+<div>
+<table>
+ <pre>Sort By = {{orderField}}</pre>
+  <pre>Editing ={{editingRecord.sysid}}</pre>
+  <div>
+   Search: <input type="text" ng-model="searchText">
+  </div>
+  <tr>
+  <th><input type="button" value="Number" ng-click="changeSort('number')"></th>
+  <th><input type="button" value="Short Description" ng-click="changeSort('short_description')"></th>
+  <th><input type="button" value="Caller SysID" ng-click="changeSort('sys_id')"></th>
+  <th><input type="button" value="Updated" ng-click="changeSort('sys_updated_on')"></th>
+  </tr>
+  <tr ng-repeat="inci in data.incidents | orderBy:orderField | filter:searchText"> 
+  
+    <td> {{inci.number}}</td>
+  <td ng-if="inci.sysid == editingRecord.sysid"><input type="text" ng-model="editingRecord.sd"></td>
+    
+    <td ng-if="inci.sysid != editingRecord.sysid">{{inci.sd}}</td>
+    
+    <td>{{inci.caller}}</td>
+    <td>{{inci.updated}}</td>
+    
+     <td ng-if="inci.sysid != editingRecord.sysid"><input type="button" value="Edit" ng-click="edit(inci)"></td>
+    
+    
+     <td ng-if="inci.sysid == editingRecord.sysid">
+       <input type="button" value="Save" ng-click="save(inci)">
+    <input type="button" value="Reset" ng-click="reset()"></td>
+   
+    
+  </tr>
+  
+  </table>
+</div>
