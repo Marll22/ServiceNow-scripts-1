@@ -3,11 +3,14 @@ function($scope , spUtil,$http) {
   var c = this;
 	
 	$scope.orderField = "number";
+	/*
+	below scope can be used, but instead, used another $scope.changeSort, see down below
 	$scope.changeSort = function(field){
 		
 		$scope.orderField = field;
 		
 	}
+	*/
 		//this makes the UI Watch the data table and update on changes
 		spUtil.recordWatch($scope,"incident","",function(name,data){
 			
@@ -49,4 +52,13 @@ function($scope , spUtil,$http) {
 		
 	};
 
-}
+	$scope.changeSort = function(field){
+		if($scope.orderField==field){
+			$scope.orderReverse = !$scope.orderReverse;
+		}
+		else{
+			$scope.orderField = field;
+		}
+	}
+
+
