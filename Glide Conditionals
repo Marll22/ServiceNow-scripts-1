@@ -1,0 +1,15 @@
+(function executeRule(current, previous /*null when async*/) {
+
+    var approvalConditionsGR = new GlideRecord("approval_conditions_table");
+    approvalConditionsGR.orderBy('order');
+    approvalConditionsGR.query();
+
+    while (approvalConditionsGR.next()) {
+        if (GlideFilter.checkRecord(current, approvalConditionsGR.approval_condition)  == true) {
+            var approver = approvalConditionsGR.getValue("approver");
+            current.approver.setValue(approver);
+            return;
+        }
+    }
+
+})(current, previous);
