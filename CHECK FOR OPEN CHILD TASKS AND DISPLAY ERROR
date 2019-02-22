@@ -1,0 +1,18 @@
+Business Rule: Open Child Check
+When: before
+Advanced: true
+Insert: true
+Update: true
+Condition <your_close_condition>
+Script:
+checkChildTasks();
+function checkChildTasks() {
+var grChild = new GlideRecord("<your_child_table>");
+grChild.addQuery('<your_parent_field>', current.sys_id);
+grChild.addActiveQuery();
+grChild.query();
+if (grChild.getRowCount() > 0) {
+gs.addErrorMessage('Can not close Problem. Please close open Child Tasks first.');
+current.setAbortAction(true);
+}
+}
