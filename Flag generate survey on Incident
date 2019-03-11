@@ -1,0 +1,36 @@
+(function executeRule(current, previous /*null when async*/) {
+
+	var number = gs.getProperty('ufi.incident.survey_trigger');
+	var metricType = gs.getProperty('ufi.incident.survey');
+	var lastSurvey = new GlideDateTime();
+	var surveyCount = '';
+
+	var inst = new GlideRecord('asmt_assessment_instance');
+	inst.addQuery('metric_type', metricType);
+	inst.addQuery('task.sys_class_name', 'incident');
+	inst.orderByDesc('sys_created_on');
+	inst.setLimit(1);
+	inst.query();
+
+	if(inst.next()){
+		lastSurvey = inst.sys_created_on;
+	}
+	
+	gs.addInfoMessage('lastSurvey: ' + lastSurvey);
+
+	var count = new GlideAggregate('incident');
+	count.addQuery('state', '6');
+	count.addQuery('resolved_at', '>', lastSurvey);
+	count.addAggregate('COUNT');
+	count.query();
+
+	if(count.next()) 
+		surveyCount = count.getAggregate('COUNT');
+	
+	gs.addInfoMessage('surveyCount: ' + surveyCount);
+
+	if(parseInt(surveyCount) > (number - 2)){
+		current.u_generate_survey = true;
+	}
+
+})(current, previous);
