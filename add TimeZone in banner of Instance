@@ -1,0 +1,71 @@
+//Create a UI SCRIPT:
+document.addEventListener("DOMContentLoaded", function(event) {
+
+
+   var theWindow = getTopWindow().window.location;
+
+
+   var theURL = theWindow.href;
+
+
+   var baseURL = theWindow.protocol + "//" + theWindow.host + "/";
+
+
+   if (theURL.indexOf('nav_to.do?') != -1 || theURL.indexOf('navpage.do') != -1 || theURL == baseURL){
+
+
+             var theLinkElement = getTopWindow().document.querySelector("a[class~=headerlink]");
+
+
+             //Only insert if the user has roles and the links are not on the page already
+
+
+             if(g_user.hasRoles() && jQuery(theLinkElement).length == 0){
+
+
+                       var theStyle = "float: right; border-radius: 20%; padding: 2px 2px; font-size: 1.1rem; margin: 8px;" +
+
+
+                       " right: 4px; min-width: 120px; width: auto; height: 20px; text-align: center;" +
+
+
+                       " background-color: red; color: White";
+
+
+
+                       //Common styling using div & spans
+
+
+                       var linkDivOpen = '<div><span style="' + theStyle + '">';
+
+
+                       var linkDivClose = "</span></div>";
+
+                       var ga = new GlideAjax('TZ') ;
+ga.addParam('sysparm_name','TZ');
+ga.getXMLWait(); 
+                      // var timezone = "Time Zone " + ga.getAnswer();
+
+var timezone = "<a href='/nav_to.do?uri=sys_user.do?sys_id=" + g_user.userID +"%26sysparm_view=ess' id='essLink' class='headerlink' style='color: inherit;text-decoration: underline;'>Time Zone :</a>" + ga.getAnswer();
+                     
+
+                       var theHeaderElement = getTopWindow().document.querySelector(".nav.navbar-right");
+
+
+
+                       //Insert the links
+
+
+                       jQuery(linkDivOpen  +timezone + linkDivClose).insertAfter(theHeaderElement);
+
+
+                     
+
+
+             }
+
+
+   }
+
+
+});
