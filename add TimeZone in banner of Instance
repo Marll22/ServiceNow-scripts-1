@@ -1,4 +1,4 @@
-//Create a UI SCRIPT:
+//Create a UI SCRIPT (global checked):
 document.addEventListener("DOMContentLoaded", function(event) {
 
 
@@ -69,3 +69,13 @@ var timezone = "<a href='/nav_to.do?uri=sys_user.do?sys_id=" + g_user.userID +"%
 
 
 });
+
+
+
+// Then Create a new Script Include (client callable checkbox checked) :
+
+var TZ = Class.create();
+TZ.prototype = Object.extendsObject(AbstractAjaxProcessor, {
+TZ: function() { return gs.getSession().getTimeZoneName(); } } );
+
+
