@@ -1,0 +1,67 @@
+//Script include
+
+getColour : function (entity) {
+
+
+
+
+       var gr = new GlideRecord('task_sla');
+
+
+       gr.addQuery('task.sys_id',entity);
+
+
+       gr.addQuery('sla.name','CONTAINS','Resolution');
+
+
+       gr.addQuery('stage','!=','paused');
+
+
+       gr.addQuery('stage','!=','cancelled');
+
+
+       gr.query();
+
+
+       if (gr.next())
+
+
+       {
+
+
+               if(gr.percentage >= 50 && gr.percentage < 66)
+
+
+                       return 1;
+
+
+               else if(gr.percentage >= 66 && gr.percentage < 75)
+
+
+                       return 2;
+
+
+               else if(gr.percentage >= 75 && gr.percentage < 100)
+
+
+                       return 3;
+
+
+               else if(gr.percentage >= 100)
+
+
+                       return 4;
+
+
+               else
+
+
+                       return 0;
+
+
+       }
+       
+       
+       // Field Style  : value -- 
+//value javascript: new ReturnResSLA().getColour(current.sys_id) == 4
+//background-color:red;
