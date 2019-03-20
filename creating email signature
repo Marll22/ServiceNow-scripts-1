@@ -1,0 +1,25 @@
+(function runMailScript(/* GlideRecord */ current, /* TemplatePrinter */ template,
+          /* Optional EmailOutbound */ email, /* Optional GlideRecord */ email_action,
+          /* Optional GlideRecord */ event) {
+
+	
+	if(gs.hasRole('snc_internal') /* && (event.parm2 != current.caller_id.sys_id || event.parm2 != current.u_behalf_of_user.sys_id || event.parm2 != current.contact.sys_id)*/){
+		var userGR = new GlideRecord('sys_user');
+		userGR.get(event.parm2); //Event Parm 2 is the user who created the event For testing purposes (preview notification button) use Parm1
+		//Get the Users region
+		var userLoc = new GlideRecord('cmn_location');
+		userLoc.get(userGR.location.sys_id);
+		while(userLoc.parent != ''){
+			userLoc = userLoc.parent;
+		}
+		var userInfo = userGR.first_name;
+		userInfo += ' ' + userGR.last_name;
+		userInfo += ' |  ' + userLoc.name;
+		template.print(userInfo + '<br />');
+		template.print(userGR.location.country + '<br />' + userGR.location.name + '<br />' + userGR.location.city + '<br />' + userGR.location.zip + '<br />');
+		template.print('<img src="' + userGR.company.banner_image.getValue().toString() + '.iix" width="300" height="92"/><br/>');
+		template.print('Helpdesk: +44(0)2072463901 <br />Email: ' + userGR.email + '<br />'); // Add image
+		//DDI: +44(0)2072463964 |  
+	
+	}
+})(current, template, email, email_action, event);
