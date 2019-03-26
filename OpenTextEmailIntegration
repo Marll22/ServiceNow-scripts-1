@@ -1,0 +1,84 @@
+//INBOUND EMAIL ACTION SCRIPT 1 - "OpenText Vendor request" TYPE-NEW
+
+(function runAction(/*GlideRecord*/ current, /*GlideRecord*/ event, /*EmailWrapper*/ email, /*ScopedEmailLogger*/ logger, /*EmailClassifier*/ classifier) {
+	
+	// Generate 'cart' order the item
+	var emailSplit = email.subject.split('-');
+	if(emailSplit.length == 5){
+		var user = emailSplit[2];
+		user = user.split('[');
+		user = user[1];
+		user = user.split(']');
+		var openTextRef = emailSplit[4];
+		var cartId = GlideGuid.generate(null);
+		var cart = new Cart(cartId);
+		var item = cart.addItem('2fee92eb1b14bbc02364ec25bd4bcb4f');
+		var rc = cart.placeOrder();
+		//Update the RITM with info from the Email
+		var RITM = new GlideRecord('sc_req_item');
+		RITM.addQuery('request', rc.sys_id);
+		RITM.query();
+		if(RITM.next()){
+			var userGR = new GlideRecord('sys_user');
+			userGR.addQuery('name', user.toString());
+			userGR.query();
+			if(userGR.next()){
+				RITM.u_requested_for = userGR.sys_id.toString();
+				
+			} else {
+				RITM.u_requested_for = email.from;
+			}
+			RITM.short_description = email.subject;
+			RITM.description =  'OpenText request for: ' + emailSplit[3];
+			RITM.u_opentext_ref = openTextRef.trim();
+			RITM.u_opentext_link = email.body_text.trim();
+			RITM.update();
+		}
+		
+		
+		event.state = 'stop_processing';
+	}
+})(current, event, email, logger, classifier);
+
+
+//INBOUND EMAIL ACTION SCRIPT 2 = OpenText request, TYPE-NEW
+
+(function runAction(/*GlideRecord*/ current, /*GlideRecord*/ event, /*EmailWrapper*/ email, /*ScopedEmailLogger*/ logger, /*EmailClassifier*/ classifier) {
+	
+	// Generate 'cart' order the item
+	var emailSplit = email.subject.split('-');
+	if(emailSplit.length == 4){
+		var user = emailSplit[2];
+		user = user.split('] ');
+		user = user[1];
+		user = user.trim();
+		var openTextRef = emailSplit[3];
+		var cartId = GlideGuid.generate(null);
+		var cart = new Cart(cartId);
+		var item = cart.addItem('2b419a1b1bd47bc02364ec25bd4bcb3a');
+		var rc = cart.placeOrder();
+		//Update the RITM with info from the Email
+		var RITM = new GlideRecord('sc_req_item');
+		RITM.addQuery('request', rc.sys_id);
+		RITM.query();
+		if(RITM.next()){
+			var userGR = new GlideRecord('sys_user');
+			userGR.addQuery('name', user.toString());
+			userGR.query();
+			if(userGR.next()){
+				RITM.u_requested_for = userGR.sys_id.toString();
+				
+			} else {
+				RITM.u_requested_for = email.from;
+			}
+			RITM.short_description = email.subject;
+			RITM.description = email.subject;
+			RITM.u_opentext_ref = openTextRef.trim();
+			RITM.u_opentext_link = email.body_text.trim();
+			RITM.update();
+		}
+		
+		
+		event.state = 'stop_processing';
+	}
+})(current, event, email, logger, classifier);
