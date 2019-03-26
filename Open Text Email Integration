@@ -1,3 +1,5 @@
+
+//Need to make new fields as OpenText link(type is Link) and OpenText ref(type is string)
 //INBOUND EMAIL ACTION SCRIPT 1 - "OpenText Vendor request" TYPE-NEW
 
 (function runAction(/*GlideRecord*/ current, /*GlideRecord*/ event, /*EmailWrapper*/ email, /*ScopedEmailLogger*/ logger, /*EmailClassifier*/ classifier) {
