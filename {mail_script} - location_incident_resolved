@@ -1,0 +1,35 @@
+(function runMailScript(/* GlideRecord */ current, /* TemplatePrinter */ template,
+/* Optional EmailOutbound */ email, /* Optional GlideRecord */ email_action,
+/* Optional GlideRecord */ event) {
+		template.print("Subject");
+		template.print('<td>${short_description}</td>');
+
+	if(JSUtil.notNil(current.location)){
+		if(current.location!=""){
+		template.print('<tr>');
+		template.print('<td>Location:</td>');
+		template.print('<td>' + current.location.name + '</td>');
+		template.print('</tr>');
+		}
+	}
+	
+	if(JSUtil.notNil(current.u_business_service)){
+		if(current.u_business_service!=""){
+		template.print("<tr>");		
+		template.print("<td>Service:</td>");
+		template.print("<td>${u_business_service}</td>");
+		template.print("</tr>");
+	}
+	}
+
+	
+	
+	//if(JSUtil.notNil(current.location)){
+		//template.print("Location: " + current.location.name);
+		//template.print( current.location.name);
+	//working code for incident created
+	
+ 
+		
+		
+	})(current, template, email, email_action, event);
