@@ -1,0 +1,43 @@
+(function runMailScript(/* GlideRecord */ current, /* TemplatePrinter */ template,
+          /* Optional EmailOutbound */ email, /* Optional GlideRecord */ email_action,
+          /* Optional GlideRecord */ event) {
+
+          // Add your code here
+	
+	var gr = new GlideRecord('core_company');
+	gr.addQuery('name', current.getDisplayValue('trigger_id.company'));
+	gr.query();
+	while(gr.next()){
+		var directDial = gr.getValue('u_direct_dial');
+		//template.print(directDial);
+		
+		if(directDial != null )
+			{
+				var show = gr.getValue('u_direct_dial');
+			//var show = gr.getDisplayValue('directDial');
+			template.print(show);
+			}
+		if(directDial == null && gr.u_account_type == 'Commercial')
+			{
+			template.print('0333 220 0222');
+			}
+			
+		if(directDial == null && gr.u_account_type == 'Consumer')
+			{
+			template.print('0333 220 0222');
+			}
+		
+		if(directDial == null && gr.u_account_type == 'Major')
+			{
+			template.print('0330 333 9900');
+			}
+		
+		if(directDial == null && gr.u_account_type == 'Key')
+			{
+			template.print('0330 333 9900');
+			}
+		
+			
+		
+	}
+})(current, template, email, email_action, event);
