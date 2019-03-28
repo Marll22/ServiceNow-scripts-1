@@ -1,0 +1,29 @@
+var url = 'https://www.portal-timico.co.uk/something?sysId=' + current.sys_id + '&rating=';
+var starRating = "";
+var starScale = "";
+var survey = new GlideRecord("u_survey");
+survey.addQuery("u_trigger_id", current.sys_id);
+survey.addQuery("u_state", 1);
+survey.query();
+survey.next();
+for(var i = 1; i <= 10; i++) {
+	var url = 'https://portal.timico.com/survey/'+ survey.getUniqueValue() + '?score=' + i;
+	starRating = starRating + '<td align="center" style="border-radius: 3px;" bgcolor="#ED1A55"><a href="' + url + '" target="_blank" style="font-size: 16px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; text-decoration: none;border-radius: 3px; padding: 12px 18px; border: 1px solid #ED1A55; display: inline-block;">' + i + '</a></td>';
+	
+	if (i == 1 || i == 10) {
+		if (i == 1) {
+			starScale = starScale + '<td><i>(Poor)</i></td>';
+		} else {
+			starScale = starScale + '<td style="float: right;"><i>(Excellent)</i></td>';
+		}
+	} else {
+		starScale = starScale + '<td></td>';
+	}
+}
+
+template.print('<table style="width: 100%;"> <tr> <th colspan="10"> <h2>Rate your Experience</h2> </th> </tr><tr>');
+
+template.print(starScale);
+template.print('</tr><tr>');
+template.print(starRating);
+template.print("</tr></table>");
