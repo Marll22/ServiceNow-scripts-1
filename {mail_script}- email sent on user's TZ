@@ -1,0 +1,27 @@
+(function runMailScript(/* GlideRecord */ current, /* TemplatePrinter */ template,
+          /* Optional EmailOutbound */ email, /* Optional GlideRecord */ email_action,
+          /* Optional GlideRecord */ event) {
+
+          getTime();
+
+
+function getTime() {
+
+
+   var gdt = new GlideDateTime(current.start_date);
+
+
+   var timezone = Packages.java.util.TimeZone.getTimeZone(current.caller_id.time_zone);
+
+
+   gdt.setTZ(timezone);
+
+
+   template.print(gdt.getDisplayValue() + '<br \>');
+
+
+}
+//add this email notification script in email via ${script_name}.
+
+
+})(current, template, email, email_action, event);
