@@ -1,0 +1,41 @@
+// Email Notification script
+
+function onLoad() {
+  function getUrlParameter(name) {
+    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+    var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+    var results = regex.exec(location.search);
+    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+}
+if(getUrlParameter('sysparm_query') =="reopen"&& g_form.getValue('reopen_count')==0 && g_form.getValue('state',6)){
+	
+	
+	g_form.setValue('comments',"Request pending reopen via email");
+	reopenIncident(); // UI Action function
+	
+}
+
+if(g_form.getValue('u_reopen_status')=='pending'){
+	g_form.setValue('comments', 'Request reopened via email');
+	reopenInc(); //UI Action function
+}	
+}
+
+// On load client script
+
+function onLoad() {
+	
+  function getUrlParameter(name) {
+    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+    var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+    var results = regex.exec(location.search);
+    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+}
+if(getUrlParameter('sysparm_query') =="reopen"&& g_form.getValue('reopen_count')==0 && g_form.getValue('state',6)){
+	
+	g_form.setValue('state','2'); //set back to WIP
+
+	g_form.setValue('description','Form has been reopend via email button');
+}
+	
+}
