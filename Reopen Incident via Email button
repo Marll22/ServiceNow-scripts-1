@@ -1,4 +1,5 @@
-// Email Notification script
+// Email Notification script - - The requirement here was, when the email is sent we can have a reopen  
+//link which directly reopens the record without even sending an email. 
 
 function onLoad() {
   function getUrlParameter(name) {
