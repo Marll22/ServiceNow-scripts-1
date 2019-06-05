@@ -20,4 +20,4 @@ function findParent(ID) {
       findParent(parent);
     }
   }
-}
+};
