@@ -1,0 +1,36 @@
+//Script include : Call this function to copy a specific attachment from one record to another. 
+copySpecificAttachment takes the following arguments: 
+1. Donor table. This is the name of the table that the donor record (the record FROM which attachments should be copied) resides in. 
+2. Donor ID. This is the sys_id of the record from which the attachment should be copied. 
+3. Recipient Table. This is the name of the table that the recipient record resides in. 
+4. Recipient ID. This is the sys_id of the record to which the newly copied attachment should be associated. 
+5. File name. This is the exact name of the attachment file to be copied, including the extension. (Ex: "quarterly_report.xlsx") //
+
+function copySpecificAttachment(donorTable, donorID, recipientTable, recipientID, fileName) {
+	var donorAttSysID;
+	var newAttRecord;
+	var linkToNewRecord;
+	var attDataRecord;
+	var newDocRecord;
+	var attRecord = new GlideRecord('sys_attachment');
+	attRecord.addQuery('table_name', donorTable);
+	attRecord.addQuery('table_sys_id', donorID);
+	attRecord.addQuery('file_name', fileName);
+	attRecord.query();
+	while (attRecord.next()) {
+		donorAttSysID = attRecord.getValue('sys_id');
+		newAttRecord = copyRecord(attRecord);
+		newAttRecord.setValue('table_name', recipientTable);
+		newAttRecord.setValue('table_sys_id', recipientID);
+		newAttRecord.update();
+		linkToNewRecord = gs.getProperty('glide.servlet.uri') + newAttRecord.getLink();
+		attDataRecord = new GlideRecord('sys_attachment_doc');
+		attDataRecord.addQuery('sys_attachment', donorAttSysID);
+		attDataRecord.query();
+		while (attDataRecord.next()) {
+			newDocRecord = copyRecord(attDataRecord);
+			newDocRecord.setValue('sys_attachment', newAttRecord.getValue('sys_id'));
+			newDocRecord.update();
+		}
+	}
+}
