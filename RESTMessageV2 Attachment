@@ -1,0 +1,21 @@
+var tablename = 'incident';
+var recordSysId = '3197671513d75200a54fb8b12244b0f6';
+var filename = 'new_image.jpeg';
+var request = new sn_ws.RESTMessageV2();
+request.setHttpMethod('get');
+request.setEndpoint('https://demonightlyus.service-now.com/api/now/attachment/2b6644b15f1021001c9b2572f2b47763/file');
+request.saveResponseBodyAsAttachment(tablename, recordSysId, filename);
+request.setBasicAuth('admin', '{update_with_password');
+
+
+var response = request.execute();
+var httpResponseStatus = response.getStatusCode();
+var httpResponseContentType = response.getHeader('Content-Type');
+var newAttachmentSysId = response.getResponseAttachmentSysid();
+var parsed;
+var httpResponseBody;
+
+
+gs.debug("http response status_code: " + httpResponseStatus);
+gs.debug("http response content-type: " + httpResponseContentType);
+gs.debug(newAttachmentSysId);
