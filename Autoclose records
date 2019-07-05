@@ -1,0 +1,23 @@
+//Scheduled jobs
+
+autoCloseProblems();
+
+function autoCloseProblems() {
+	var ps = gs.getProperty('glide.ui.autocloseproblem.time');
+	var pn = parseInt(ps);
+	var queryTime = new GlideDateTime();
+	queryTime.addDaysUTC(-pn);
+
+	if (pn > 0) {
+		var gr = new GlideRecord('problem');
+		gr.addQuery('state', '5');
+		gr.addQuery('sys_updated_on', '<', queryTime);
+		gr.query();
+		while(gr.next()) {
+			gr.problem_state = '6';
+			gr.active = false;
+			gr.closed_by = gr.resolved_by;
+			gr.update(); 
+		}
+	}
+}
