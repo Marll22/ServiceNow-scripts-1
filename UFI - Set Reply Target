@@ -1,0 +1,17 @@
+var emailRegx = current.body.match(/Ref:MSG\d+/gi);								
+	var smemail = emailRegx.toString().replace('Ref:','');	
+if(emailRegx){
+ 	var wm = new GlideRecord('sys_watermark');
+	wm.addQuery('number','=',smemail);	
+	wm.query();
+if(wm.next()){	
+		gs.log('source Table : '+ wm.source_table + '------Source : '+wm.getDisplayValue('source_id')+  '-----Source Id states : '+ wm.getDisplayValue('source_id.state') + "========Regx : "+emailRegx + "----Ex-Regx : "+ smemail + '=======watermark number : '+ smemail);	
+		var inc = new GlideRecord('incident');
+        inc.addQuery('parent_incident',wm.source_id);
+	    inc.orderByDesc('sys_created_on');
+		inc.query();
+		if(inc.next()){
+			current.setValue('instance', inc.sys_id );
+			}
+	}
+}	
