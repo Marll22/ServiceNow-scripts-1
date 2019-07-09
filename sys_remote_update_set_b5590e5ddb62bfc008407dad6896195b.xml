@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?><unload unload_date="2019-07-09 04:36:44">
+<sys_remote_update_set action="INSERT_OR_UPDATE">
+<application display_value="Global">global</application>
+<application_name>Global</application_name>
+<application_scope>global</application_scope>
+<application_version/>
+<collisions/>
+<commit_date/>
+<deleted/>
+<description>ServiceNow Mail Routes Issue</description>
+<inserted/>
+<name>UFI-INC1159019 V1</name>
+<origin_sys_id/>
+<parent display_value=""/>
+<release_date/>
+<remote_base_update_set display_value=""/>
+<remote_parent_id/>
+<remote_sys_id>91e161661b493780e737a9b7bd4bcb80</remote_sys_id>
+<state>loaded</state>
+<summary/>
+<sys_class_name>sys_remote_update_set</sys_class_name>
+<sys_created_by>kush.bajpai</sys_created_by>
+<sys_created_on>2019-07-09 04:36:44</sys_created_on>
+<sys_id>b5590e5ddb62bfc008407dad6896195b</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_updated_by>kush.bajpai</sys_updated_by>
+<sys_updated_on>2019-07-09 04:36:44</sys_updated_on>
+<update_set display_value=""/>
+<update_source display_value=""/>
+<updated/>
+</sys_remote_update_set>
+<sys_update_xml action="INSERT_OR_UPDATE">
+<action>INSERT_OR_UPDATE</action>
+<application display_value="Global">global</application>
+<category>customer</category>
+<comments/>
+<name>sys_ui_section_0e58739fc0a8016400e2e29c13e3798d</name>
+<payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update><sys_ui_section caption="" section_id="0e58739fc0a8016400e2e29c13e3798d" sys_domain="global" table="sys_user_group" version="3" view=""><sys_ui_element action="INSERT_OR_UPDATE"><element>name</element><position>0</position><sys_created_by>kush.bajpai</sys_created_by><sys_created_on>2019-04-25 11:35:05</sys_created_on><sys_id>72d9d155db85374000a3f9971d96190f</sys_id><sys_mod_count>0</sys_mod_count><sys_ui_formatter/><sys_ui_section caption="NULL" display_value="" name="sys_user_group" sys_domain="global" view="Default view">0e58739fc0a8016400e2e29c13e3798d</sys_ui_section><sys_updated_by>kush.bajpai</sys_updated_by><sys_updated_on>2019-04-25 11:35:05</sys_updated_on><sys_user/><type/></sys_ui_element><sys_ui_element action="INSERT_OR_UPDATE"><element>manager</element><position>1</position><sys_created_by>kush.bajpai</sys_created_by><sys_created_on>2019-04-25 11:35:05</sys_created_on><sys_id>f6d9d155db85374000a3f9971d96190f</sys_id><sys_mod_count>0</sys_mod_count><sys_ui_formatter/><sys_ui_section caption="NULL" display_value="" name="sys_user_group" sys_domain="global" view="Default view">0e58739fc0a8016400e2e29c13e3798d</sys_ui_section><sys_updated_by>kush.bajpai</sys_updated_by><sys_updated_on>2019-04-25 11:35:05</sys_updated_on><sys_user/><type/></sys_ui_element><sys_ui_element action="INSERT_OR_UPDATE"><element>hourly_rate</element><position>2</position><sys_created_by>kush.bajpai</sys_created_by><sys_created_on>2019-04-25 11:35:05</sys_created_on><sys_id>7ad9d155db85374000a3f9971d96190f</sys_id><sys_mod_count>0</sys_mod_count><sys_ui_formatter/><sys_ui_section caption="NULL" display_value="" name="sys_user_group" sys_domain="global" view="Default view">0e58739fc0a8016400e2e29c13e3798d</sys_ui_section><sys_updated_by>kush.bajpai</sys_updated_by><sys_updated_on>2019-04-25 11:35:05</sys_updated_on><sys_user/><type/></sys_ui_element><sys_ui_element action="INSERT_OR_UPDATE"><element>.split</element><position>3</position><sys_created_by>kush.bajpai</sys_created_by><sys_created_on>2019-04-25 11:35:05</sys_created_on><sys_id>fad9d155db85374000a3f9971d96190f</sys_id><sys_mod_count>0</sys_mod_count><sys_ui_formatter/><sys_ui_section caption="NULL" display_value="" name="sys_user_group" sys_domain="global" view="Default view">0e58739fc0a8016400e2e29c13e3798d</sys_ui_section><sys_updated_by>kush.bajpai</sys_updated_by><sys_updated_on>2019-04-25 11:35:05</sys_updated_on><sys_user/><type>.split</type></sys_ui_element><sys_ui_element action="INSERT_OR_UPDATE"><element>email</element><position>4</position><sys_created_by>kush.bajpai</sys_created_by><sys_created_on>2019-04-25 11:35:05</sys_created_on><sys_id>7ed9d155db85374000a3f9971d96190f</sys_id><sys_mod_count>0</sys_mod_count><sys_ui_formatter/><sys_ui_section caption="NULL" display_value="" name="sys_user_group" sys_domain="global" view="Default view">0e58739fc0a8016400e2e29c13e3798d</sys_ui_section><sys_updated_by>kush.bajpai</sys_updated_by><sys_updated_on>2019-04-25 11:35:05</sys_updated_on><sys_user/><type/></sys_ui_element><sys_ui_element action="INSERT_OR_UPDATE"><element>u_multiple_emails_for_this_group</element><position>5</position><sys_created_by>kush.bajpai</sys_created_by><sys_created_on>2019-04-25 11:35:05</sys_created_on><sys_id>fed9d155db85374000a3f9971d96190f</sys_id><sys_mod_count>0</sys_mod_count><sys_ui_formatter/><sys_ui_section caption="NULL" display_value="" name="sys_user_group" sys_domain="global" view="Default view">0e58739fc0a8016400e2e29c13e3798d</sys_ui_section><sys_updated_by>kush.bajpai</sys_updated_by><sys_updated_on>2019-04-25 11:35:05</sys_updated_on><sys_user/><type/></sys_ui_element><sys_ui_element action="INSERT_OR_UPDATE"><element>parent</element><position>6</position><sys_created_by>kush.bajpai</sys_created_by><sys_created_on>2019-04-25 11:35:05</sys_created_on><sys_id>72d9d155db85374000a3f9971d961910</sys_id><sys_mod_count>0</sys_mod_count><sys_ui_formatter/><sys_ui_section caption="NULL" display_value="" name="sys_user_group" sys_domain="global" view="Default view">0e58739fc0a8016400e2e29c13e3798d</sys_ui_section><sys_updated_by>kush.bajpai</sys_updated_by><sys_updated_on>2019-04-25 11:35:05</sys_updated_on><sys_user/><type/></sys_ui_element><sys_ui_element action="INSERT_OR_UPDATE"><element>active</element><position>7</position><sys_created_by>kush.bajpai</sys_created_by><sys_created_on>2019-04-25 11:35:05</sys_created_on><sys_id>f2d9d155db85374000a3f9971d961910</sys_id><sys_mod_count>0</sys_mod_count><sys_ui_formatter/><sys_ui_section caption="NULL" display_value="" name="sys_user_group" sys_domain="global" view="Default view">0e58739fc0a8016400e2e29c13e3798d</sys_ui_section><sys_updated_by>kush.bajpai</sys_updated_by><sys_updated_on>2019-04-25 11:35:05</sys_updated_on><sys_user/><type/></sys_ui_element><sys_ui_element action="INSERT_OR_UPDATE"><element>.end_split</element><position>8</position><sys_created_by>kush.bajpai</sys_created_by><sys_created_on>2019-04-25 11:35:05</sys_created_on><sys_id>76d9d155db85374000a3f9971d961910</sys_id><sys_mod_count>0</sys_mod_count><sys_ui_formatter/><sys_ui_section caption="NULL" display_value="" name="sys_user_group" sys_domain="global" view="Default view">0e58739fc0a8016400e2e29c13e3798d</sys_ui_section><sys_updated_by>kush.bajpai</sys_updated_by><sys_updated_on>2019-04-25 11:35:05</sys_updated_on><sys_user/><type>.end_split</type></sys_ui_element><sys_ui_element action="INSERT_OR_UPDATE"><element>description</element><position>9</position><sys_created_by>kush.bajpai</sys_created_by><sys_created_on>2019-04-25 11:35:05</sys_created_on><sys_id>f6d9d155db85374000a3f9971d961910</sys_id><sys_mod_count>0</sys_mod_count><sys_ui_formatter/><sys_ui_section caption="NULL" display_value="" name="sys_user_group" sys_domain="global" view="Default view">0e58739fc0a8016400e2e29c13e3798d</sys_ui_section><sys_updated_by>kush.bajpai</sys_updated_by><sys_updated_on>2019-04-25 11:35:05</sys_updated_on><sys_user/><type/></sys_ui_element><sys_ui_element action="INSERT_OR_UPDATE"><element>type</element><position>10</position><sys_created_by>kush.bajpai</sys_created_by><sys_created_on>2019-04-25 11:35:05</sys_created_on><sys_id>7ad9d155db85374000a3f9971d961910</sys_id><sys_mod_count>0</sys_mod_count><sys_ui_formatter/><sys_ui_section caption="NULL" display_value="" name="sys_user_group" sys_domain="global" view="Default view">0e58739fc0a8016400e2e29c13e3798d</sys_ui_section><sys_updated_by>kush.bajpai</sys_updated_by><sys_updated_on>2019-04-25 11:35:05</sys_updated_on><sys_user/><type/></sys_ui_element><sys_ui_section action="INSERT_OR_UPDATE"><caption/><header>false</header><name>sys_user_group</name><roles/><sys_class_name>sys_ui_section</sys_class_name><sys_created_by>admin</sys_created_by><sys_created_on>2005-02-14 00:50:40</sys_created_on><sys_customer_update>false</sys_customer_update><sys_domain>global</sys_domain><sys_domain_path>/</sys_domain_path><sys_id>0e58739fc0a8016400e2e29c13e3798d</sys_id><sys_mod_count>2</sys_mod_count><sys_name>sys_user_group</sys_name><sys_overrides/><sys_package display_value="Service Management Core" source="com.snc.service_management.core">6cb2c37ddb860b00f49cf7461d961902</sys_package><sys_policy/><sys_replace_on_upgrade>false</sys_replace_on_upgrade><sys_scope display_value="Global">global</sys_scope><sys_update_name>sys_ui_section_0e58739fc0a8016400e2e29c13e3798d</sys_update_name><sys_updated_by>glide.maint</sys_updated_by><sys_updated_on>2007-04-16 05:17:17</sys_updated_on><sys_user/><title>true</title><view display_value="Default view" name="NULL">Default view</view><view_name/></sys_ui_section></sys_ui_section></record_update>]]></payload>
+<payload_hash>-247310520</payload_hash>
+<remote_update_set display_value="UFI-INC1159019 V1">b5590e5ddb62bfc008407dad6896195b</remote_update_set>
+<replace_on_upgrade>false</replace_on_upgrade>
+<sys_created_by>kush.bajpai</sys_created_by>
+<sys_created_on>2019-07-09 04:36:44</sys_created_on>
+<sys_id>31590e5ddb62bfc008407dad6896195d</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_recorded_at>16a68673ccc0000001</sys_recorded_at>
+<sys_updated_by>kush.bajpai</sys_updated_by>
+<sys_updated_on>2019-07-09 04:36:44</sys_updated_on>
+<table>sys_user_group</table>
+<target_name>Group</target_name>
+<type>Form Layout</type>
+<update_domain>global</update_domain>
+<update_guid>bed9d1559b853740185eb21e0862ef12</update_guid>
+<update_guid_history>bed9d1559b853740185eb21e0862ef12:-247310520,f72fc36e222b1b40bf4a4d617cf9ade7:-1937876101,c2ad6afe3c0ad304d9f4b03fc05e384b:436012677,8aad6afe1b0ad3042eff27bf5772e02c:-1798626646</update_guid_history>
+<update_set display_value=""/>
+<view/>
+</sys_update_xml>
+<sys_update_xml action="INSERT_OR_UPDATE">
+<action>INSERT_OR_UPDATE</action>
+<application display_value="Global">global</application>
+<category>customer</category>
+<comments/>
+<name>sys_script_include_4d891ff0dbc1f34000a3f9971d96194e</name>
+<payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sys_script_include"&gt;&lt;sys_script_include action="INSERT_OR_UPDATE"&gt;&lt;access&gt;package_private&lt;/access&gt;&lt;active&gt;true&lt;/active&gt;&lt;api_name&gt;global.UFI_PTASKmailUtil&lt;/api_name&gt;&lt;client_callable&gt;false&lt;/client_callable&gt;&lt;description/&gt;&lt;name&gt;UFI_PTASKmailUtil&lt;/name&gt;&lt;script&gt;&lt;![CDATA[var UFI_PTASKmailUtil = Class.create();
+UFI_PTASKmailUtil.prototype = {
+    initialize: function() {
+    },
+	
+getUserIDfromEmailTo : function(emailTo){
+		
+		var string = emailTo;
+var array = new Array();
+array = string.split(",");
+
+for (var i=0; i&lt;array.length ; i++){
+  
+
+		var filterUserID = new GlideRecord('sys_user_group');
+	    filterUserID.addQuery('u_multiple_emails_for_this_group', array[i]);
+		filterUserID.query();
+		while(filterUserID.next()){
+			if(emailTo){
+				return filterUserID.getValue('sys_id');
+			}
+			else{
+				
+				return gs.log('No assignment group found w.r.t the email received');
+				
+			}
+		}
+}	 
+	},
+    type: 'UFI_PTASKmailUtil'
+};]]&gt;&lt;/script&gt;&lt;sys_class_name&gt;sys_script_include&lt;/sys_class_name&gt;&lt;sys_created_by&gt;kush.bajpai&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2019-04-24 07:37:29&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;false&lt;/sys_customer_update&gt;&lt;sys_id&gt;4d891ff0dbc1f34000a3f9971d96194e&lt;/sys_id&gt;&lt;sys_mod_count&gt;4&lt;/sys_mod_count&gt;&lt;sys_name&gt;UFI_PTASKmailUtil&lt;/sys_name&gt;&lt;sys_package display_value="Global" source="global"&gt;global&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Global"&gt;global&lt;/sys_scope&gt;&lt;sys_update_name&gt;sys_script_include_4d891ff0dbc1f34000a3f9971d96194e&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;kush.bajpai&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2019-04-25 11:36:59&lt;/sys_updated_on&gt;&lt;/sys_script_include&gt;&lt;/record_update&gt;</payload>
+<payload_hash>501360245</payload_hash>
+<remote_update_set display_value="UFI-INC1159019 V1">b5590e5ddb62bfc008407dad6896195b</remote_update_set>
+<replace_on_upgrade>false</replace_on_upgrade>
+<sys_created_by>kush.bajpai</sys_created_by>
+<sys_created_on>2019-07-09 04:36:44</sys_created_on>
+<sys_id>7d590e5ddb62bfc008407dad6896195c</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_recorded_at>16a68673cd50000001</sys_recorded_at>
+<sys_updated_by>kush.bajpai</sys_updated_by>
+<sys_updated_on>2019-07-09 04:36:44</sys_updated_on>
+<table/>
+<target_name>UFI_PTASKmailUtil</target_name>
+<type>Script Include</type>
+<update_domain>global</update_domain>
+<update_guid>ea4ad155138537402a19c5dbcdbb9c1d</update_guid>
+<update_guid_history>ea4ad155138537402a19c5dbcdbb9c1d:501360245,2c7cdbf400c1f340c9a317088e75965a:1045508386,17ab5b34adc1f340269863188d28d463:-1752700137,cc8b1774a2c1f340b2051efad126f467:15648640,90e9d3f06bc1f3405ec4a3ee8e25128c:940282678</update_guid_history>
+<update_set display_value=""/>
+<view/>
+</sys_update_xml>
+<sys_update_xml action="INSERT_OR_UPDATE">
+<action>INSERT_OR_UPDATE</action>
+<application display_value="Global">global</application>
+<category>customer</category>
+<comments/>
+<name>sys_documentation_sys_user_group_u_multiple_emails_for_this_group_en</name>
+<payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update><sys_documentation element="u_multiple_emails_for_this_group" label="Multiple Emails for this group" language="en" table="sys_user_group"><sys_documentation action="INSERT_OR_UPDATE"><element>u_multiple_emails_for_this_group</element><help/><hint/><label>Multiple Emails for this group</label><language>en</language><name>sys_user_group</name><plural>Multiple Emails for this groups</plural><sys_class_name>sys_documentation</sys_class_name><sys_created_by>kush.bajpai</sys_created_by><sys_created_on>2019-04-25 11:35:05</sys_created_on><sys_customer_update>false</sys_customer_update><sys_id>e2d9d155db85374000a3f9971d961903</sys_id><sys_mod_count>0</sys_mod_count><sys_name>Multiple Emails for this group</sys_name><sys_package display_value="Global" source="global">global</sys_package><sys_policy/><sys_replace_on_upgrade>false</sys_replace_on_upgrade><sys_scope display_value="Global">global</sys_scope><sys_update_name>sys_documentation_sys_user_group_u_multiple_emails_for_this_group_en</sys_update_name><sys_updated_by>kush.bajpai</sys_updated_by><sys_updated_on>2019-04-25 11:35:05</sys_updated_on><url/><url_target/></sys_documentation></sys_documentation></record_update>]]></payload>
+<payload_hash>1789153227</payload_hash>
+<remote_update_set display_value="UFI-INC1159019 V1">b5590e5ddb62bfc008407dad6896195b</remote_update_set>
+<replace_on_upgrade>false</replace_on_upgrade>
+<sys_created_by>kush.bajpai</sys_created_by>
+<sys_created_on>2019-07-09 04:36:44</sys_created_on>
+<sys_id>b9590e5ddb62bfc008407dad6896195c</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_recorded_at>16a68673cc70000001</sys_recorded_at>
+<sys_updated_by>kush.bajpai</sys_updated_by>
+<sys_updated_on>2019-07-09 04:36:44</sys_updated_on>
+<table>sys_user_group</table>
+<target_name>Group.Multiple Emails for this group</target_name>
+<type>Field Label</type>
+<update_domain>global</update_domain>
+<update_guid>b6d9d155d785374019c72f3381eb7d0e</update_guid>
+<update_guid_history>b6d9d155d785374019c72f3381eb7d0e:1789153227</update_guid_history>
+<update_set display_value=""/>
+<view/>
+</sys_update_xml>
+<sys_update_xml action="INSERT_OR_UPDATE">
+<action>INSERT_OR_UPDATE</action>
+<application display_value="Global">global</application>
+<category>customer</category>
+<comments/>
+<name>sysevent_in_email_action_6acc26ccdb4f47009ccaf58dae961987</name>
+<payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update sys_domain="global" table="sysevent_in_email_action"&gt;&lt;sysevent_in_email_action action="INSERT_OR_UPDATE"&gt;&lt;action&gt;record_action&lt;/action&gt;&lt;active&gt;true&lt;/active&gt;&lt;assignment_operator/&gt;&lt;condition_script/&gt;&lt;description&gt;Incident create with assignment group set&lt;/description&gt;&lt;event_name&gt;email.read&lt;/event_name&gt;&lt;filter_condition table="sys_email"&gt;subjectSTARTSWITHINTERNAL^EQ&lt;item endquery="false" field="subject" goto="false" newquery="false" operator="STARTSWITH" or="false" value="INTERNAL"/&gt;&lt;item endquery="true" field="" goto="false" newquery="false" operator="=" or="false" value=""/&gt;&lt;/filter_condition&gt;&lt;from/&gt;&lt;name&gt;SI - Create Internal Task&lt;/name&gt;&lt;order&gt;100&lt;/order&gt;&lt;reply_email/&gt;&lt;required_roles/&gt;&lt;script&gt;&lt;![CDATA[(function runAction(/*GlideRecord*/ current, /*GlideRecord*/ event, /*EmailWrapper*/ email, /*ScopedEmailLogger*/ logger, /*EmailClassifier*/ classifier) {
+	
+	var signa = email.body_text ;
+	var replaced = signa.replace(/(\[https?:\/\/[^\s]+)|(&lt;https?:\/\/[^\s]+)|(\[\S+@\S+\.\S+)|(\[[\S ]+)|([\S ]+\])|(\n\n\s+)|(&lt;\S+&gt;)/gm, '\n'); // Updated as per STRY0018045
+	
+	var rep = replaced.replace(/(\n\n\s+)/g, '\n\n');
+	current.description = rep;
+	
+//	current.setDisplayValue('assignment_group',gs.getProperty('ufi.assignment.group.billing.operations')); // Billing Operations
+	
+	var gv = email.to;
+	current.assignment_group = new UFI_PTASKmailUtil().getUserIDfromEmailTo(gv);
+	
+	var lcheaders = email.headers.toLowerCase();
+	var group = lcheaders.indexOf('x-servicenow:');
+	var group_start = group + 13;
+	var groupname = lcheaders.substring(group_start, email.headers.indexOf('\n', group_start) -1);
+	current.assignment_group.setDisplayValue(groupname);
+	gs.log('***'+groupname+'***');
+	
+	current.insert();
+	
+})(current, event, email, logger, classifier);]]&gt;&lt;/script&gt;&lt;stop_processing&gt;false&lt;/stop_processing&gt;&lt;sys_class_name&gt;sysevent_in_email_action&lt;/sys_class_name&gt;&lt;sys_created_by&gt;Myles-SI&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2017-12-10 17:57:08&lt;/sys_created_on&gt;&lt;sys_customer_update&gt;false&lt;/sys_customer_update&gt;&lt;sys_domain&gt;global&lt;/sys_domain&gt;&lt;sys_domain_path&gt;/&lt;/sys_domain_path&gt;&lt;sys_id&gt;6acc26ccdb4f47009ccaf58dae961987&lt;/sys_id&gt;&lt;sys_mod_count&gt;15&lt;/sys_mod_count&gt;&lt;sys_name&gt;SI - Create Internal Task&lt;/sys_name&gt;&lt;sys_overrides/&gt;&lt;sys_package display_value="Global" source="global"&gt;global&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_replace_on_upgrade&gt;false&lt;/sys_replace_on_upgrade&gt;&lt;sys_scope display_value="Global"&gt;global&lt;/sys_scope&gt;&lt;sys_update_name&gt;sysevent_in_email_action_6acc26ccdb4f47009ccaf58dae961987&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;kush.bajpai&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2019-04-24 07:40:54&lt;/sys_updated_on&gt;&lt;table&gt;vtb_task&lt;/table&gt;&lt;template&gt;short_descriptionDYNAMICb637bd21ef3221002841f7f775c0fbb6^u_source_emailDYNAMICe009a97bef3221002841f7f775c0fb16^EQ&lt;/template&gt;&lt;type&gt;new&lt;/type&gt;&lt;/sysevent_in_email_action&gt;&lt;/record_update&gt;</payload>
+<payload_hash>-645764674</payload_hash>
+<remote_update_set display_value="UFI-INC1159019 V1">b5590e5ddb62bfc008407dad6896195b</remote_update_set>
+<replace_on_upgrade>false</replace_on_upgrade>
+<sys_created_by>kush.bajpai</sys_created_by>
+<sys_created_on>2019-07-09 04:36:44</sys_created_on>
+<sys_id>bd590e5ddb62bfc008407dad6896195b</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_recorded_at>16a68673ca90000001</sys_recorded_at>
+<sys_updated_by>kush.bajpai</sys_updated_by>
+<sys_updated_on>2019-07-09 04:36:44</sys_updated_on>
+<table>vtb_task</table>
+<target_name>SI - Create Internal Task</target_name>
+<type>Inbound Email Actions</type>
+<update_domain>global</update_domain>
+<update_guid>aeaa13b499c1f3404bed752626e5ea9d</update_guid>
+<update_guid_history>aeaa13b499c1f3404bed752626e5ea9d:-645764674,0a5fed0e1ef4bb00ef7d9cfd96037632:1235765887,e7814303b0447b40dcfc3bdf73ef528e:-1034522113,b27ffe8f1e047b40f278f6bab82d7ce7:669639263,36f9c07cc4fb2700d4e61454e758988a:1465891078,352093b63113a740adfb77031357aac1:1335201036,60fd901179ba2300b054184c80e3adb3:465826762,c3fb27cdd5f623002a7e3f600388cba2:1697210799,7d45c8099d3f4340692eb18d17961a4d:-1797482274,05db93955e8b4b00ad39f9a23bb267c2:1088720780,1c9b1395408b4b00346581e26da653d6:178807106,6f4b4105c10f0b004f4004b4222586e2:333406312,ebdcaa1963cbc7004e1411080c5187a5:99020936,c35b01811e074700aa576cd62bc2a0a6:540958978,b58d2eccf94f4700ec07ee1c7d0f4311:443673811,937d6ecc9c4f47001ebbcdedb7ec9a06:443673811,38fc22ccee4f47009301a5930283a89c:333406312,2ecc26cc4c4f4700c3a1353e9fea6d88:854782720</update_guid_history>
+<update_set display_value=""/>
+<view/>
+</sys_update_xml>
+<sys_update_xml action="INSERT_OR_UPDATE">
+<action>INSERT_OR_UPDATE</action>
+<application display_value="Global">global</application>
+<category>customer</category>
+<comments/>
+<name>sys_dictionary_sys_user_group_u_multiple_emails_for_this_group</name>
+<payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update><sys_dictionary action="INSERT_OR_UPDATE" element="u_multiple_emails_for_this_group" table="sys_user_group"><active>true</active><array>false</array><array_denormalized>false</array_denormalized><attributes>no_sort=true,slushbucket_ref_no_expand=true</attributes><audit>false</audit><calculation/><choice>0</choice><choice_field/><choice_table/><column_label>Multiple Emails for this group</column_label><comments/><create_roles/><default_value/><defaultsort/><delete_roles/><dependent/><dependent_on_field/><display>false</display><dynamic_creation>false</dynamic_creation><dynamic_creation_script/><dynamic_default_value/><dynamic_ref_qual/><element>u_multiple_emails_for_this_group</element><element_reference>false</element_reference><foreign_database/><function_definition/><function_field>false</function_field><internal_type display_value="">glide_list</internal_type><mandatory>false</mandatory><max_length>1024</max_length><name>sys_user_group</name><next_element/><primary>false</primary><read_only>false</read_only><read_roles/><reference display_value="" name="sys_user">sys_user</reference><reference_cascade_rule/><reference_floats>false</reference_floats><reference_key/><reference_qual/><reference_qual_condition/><reference_type/><sizeclass/><spell_check>false</spell_check><staged>false</staged><sys_class_name>sys_dictionary</sys_class_name><sys_created_by>kush.bajpai</sys_created_by><sys_created_on>2019-04-25 11:35:05</sys_created_on><sys_customer_update>false</sys_customer_update><sys_id>aed9d155db85374000a3f9971d961901</sys_id><sys_mod_count>0</sys_mod_count><sys_name>Multiple Emails for this group</sys_name><sys_package display_value="Global" source="global">global</sys_package><sys_policy/><sys_replace_on_upgrade>false</sys_replace_on_upgrade><sys_scope display_value="Global">global</sys_scope><sys_update_name>sys_dictionary_sys_user_group_u_multiple_emails_for_this_group</sys_update_name><sys_updated_by>kush.bajpai</sys_updated_by><sys_updated_on>2019-04-25 11:35:05</sys_updated_on><table_reference>false</table_reference><text_index>false</text_index><unique>false</unique><use_dependent_field>false</use_dependent_field><use_dynamic_default>false</use_dynamic_default><use_reference_qualifier>simple</use_reference_qualifier><virtual>false</virtual><widget/><write_roles/><xml_view>false</xml_view></sys_dictionary></record_update>]]></payload>
+<payload_hash>93267800</payload_hash>
+<remote_update_set display_value="UFI-INC1159019 V1">b5590e5ddb62bfc008407dad6896195b</remote_update_set>
+<replace_on_upgrade>false</replace_on_upgrade>
+<sys_created_by>kush.bajpai</sys_created_by>
+<sys_created_on>2019-07-09 04:36:44</sys_created_on>
+<sys_id>f5590e5ddb62bfc008407dad6896195c</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_recorded_at>16a68673cc20000001</sys_recorded_at>
+<sys_updated_by>kush.bajpai</sys_updated_by>
+<sys_updated_on>2019-07-09 04:36:44</sys_updated_on>
+<table>sys_user_group</table>
+<target_name>Group.Multiple Emails for this group</target_name>
+<type>Dictionary</type>
+<update_domain>global</update_domain>
+<update_guid>36d9d15584853740a2b74bd2c4871b0d</update_guid>
+<update_guid_history>36d9d15584853740a2b74bd2c4871b0d:93267800</update_guid_history>
+<update_set display_value=""/>
+<view/>
+</sys_update_xml>
+</unload>
