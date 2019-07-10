@@ -1,0 +1,6 @@
+//ON LOAD CATALOG CLIENT SCRIPT
+
+function onLoad() {
+   //Type appropriate comment here, and begin script below
+   $j('td.catalog_description').find('img').css("margin-left","88vw");
+}
