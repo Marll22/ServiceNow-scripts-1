@@ -1,0 +1,70 @@
+//SCRIPT INLCUDE
+var UFIAttachmentRestHandler = Class.create();
+UFIAttachmentRestHandler.prototype = Object.extendsObject(AbstractAjaxProcessor, {
+
+	restCall : function(){
+		var fileBase64 = this.getParameter('sysparam_file');
+		var fileType = this.getParameter('sysparam_fileType');
+		var fileName = this.getParameter('sysparam_fileName');
+		var destinationRecord = this.getParameter('sysparam_recordID');
+		var destinationTable = this.getParameter('sysparam_table');
+
+		var encoded = fileBase64.split(',')[1];
+		var body = { 
+			"agent":"AttachmentCreator", 
+			"topic":"AttachmentCreator", 
+			"source":destinationTable + ":" + destinationRecord, 
+			"name":fileName + ":" + fileType, 
+			"payload":encoded 
+		}; 
+
+		body = JSON.stringify(body); 
+
+		var msg = new sn_ws.RESTMessageV2('WordAttachmentTest', 'Attachment'); 
+		msg.setRequestBody(body); 
+		var response = msg.execute(); 
+	},
+
+	createAttachment : function(){
+		var dsarAttachment = new GlideRecord('u_dsar_attachment');
+		dsarAttachment.initialize();
+		return dsarAttachment.insert();
+	},
+
+	type: 'UFIAttachmentRestHandler'
+});
+
+//CATALOG CLIENT SCRIPTS
+function onSubmit() {
+	
+	var file = document.getElementById('fileForAttachment').files[0];
+	var fileData = '';
+	if(file){
+		var type = document.getElementById('fileForAttachment').files[0].type.toString();
+		var name = document.getElementById('fileForAttachment').files[0].name.toString();
+
+		var reader = new FileReader();
+
+		reader.onloadend = function(e) {
+			fileData = e.target.result.toString();
+			console.log('FD 1 = ' + fileData);
+			//send your binary data via $http or $resource or do anything else with it	
+			var recordID = g_form.getValue('dsar_attachment');
+
+			if(recordID){
+				console.log('FD 2 = ' + fileData);
+				console.log(recordID);
+				var ga = new GlideAjax('UFIAttachmentRestHandler');
+				ga.addParam('sysparm_name', 'restCall');
+				ga.addParam('sysparam_file', fileData);
+				ga.addParam('sysparam_fileType', type);
+				ga.addParam('sysparam_fileName', name);
+				ga.addParam('sysparam_table','u_dsar_attachment');
+				ga.addParam('sysparam_recordID', recordID);
+				ga.getXMLWait();
+			}
+		};
+		reader.readAsDataURL(file);
+
+	}
+}
