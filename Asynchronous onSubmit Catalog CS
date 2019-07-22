@@ -1,0 +1,64 @@
+function onSubmit() {
+    //Hide any existing messages from previous validation attempts
+    g_form.clearMessages();
+    //If the user was validated, stop here and submit the form.
+    if (getClientData('user_validated')) { //getClientData implemented below
+        return true;
+    } //If the user has not yet been validated, do so
+    var grUser = new GlideRecord('sys_user');
+    grUser.addQuery('sys_id', g_user.getUserID());
+    grUser.setLimit(1);
+    //Query and pass in the callback function
+    grUser.query(validateUser);
+    //then return false to halt submission (for now)
+    return false;
+}
+
+function validateUser(grUser) {
+    //Perform validation
+    if (grUser.getValue('title').indexOf('director') >= 0) {
+        //If the user is valid, set client data user_validated to true
+        setClientData('user_validated', true);
+        //then re-submit
+        g_form.submit(); //(This will trigger line 6 above, and submit the form!)
+    } else { //If the validation failed...
+        //set the client data user_validated element to false
+        setClientData('user_validated', false);
+        //and warn the user, but do not re-submit the form.
+        g_form.addErrorMessage('Some message about not being a valid user');
+    }
+}
+
+/**
+ * Sets a client data variable. Works on both classic UI (using legacy g_user.setClientData() method) and portal UI (using this.client_data). 
+ * @param {string} key - The key to store the data in. Use this with getClientData() to retrieve the value stored here. 
+ * @param {string} val - The value to store in the specified key.
+ */
+function setClientData(key, val) {
+    if (typeof g_user.setClientData != 'undefined') {
+        g_user.setClientData(key, val);
+    } else {
+        if (typeof this.client_data == 'undefined') {
+            this.client_data = {};
+        }
+        this.client_data[key] = val;
+    }
+}
+
+/**
+ * Gets a client data variable, stored using setClientData(). Works on both classic UI (using legacy g_user.getClientData() method) and portal UI (using this.client_data).
+ * @param {string} key - The key to the value you'd like to retrieve.
+ * @returns {string}
+ */
+function getClientData(key) {
+    if (typeof g_user.getClientData != 'undefined') {
+        return g_user.getClientData(key);
+    } else {
+        try {
+            return (typeof this.client_data[key] == 'undefined' ? '' : this.client_data[key]);
+        } catch(ex) {
+            console.error('Error retrieving client data value ' + key + ': ' + ex.message);
+        }
+    }
+    return '';
+}
