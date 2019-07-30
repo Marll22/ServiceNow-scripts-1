@@ -1,0 +1,29 @@
+(function executeRule(current, previous /*null when async*/) {
+	if(current.table_name == "sc_request")
+		{
+		var reqItem = new GlideRecord('sc_req_item');
+		reqItem.addQuery("request", current.table_sys_id);
+		reqItem.query();
+		while(reqItem.next())
+		{
+			copyAttachment(current.getUniqueValue(), 'sc_req_item', reqItem.getUniqueValue(), current.file_name, current.content_type);
+		}
+	}
+	
+	function copyAttachment(sourceAttachmentID, targetRecordTable, targetRecordSysID, attachmentName, attachmentContentType)
+	{
+		// Pass sysID of source attachmment [sys_attachment] record to the getContentStream
+		// method to retrieve its content
+		var gsaSource = new GlideSysAttachment();
+		var attContent = gsaSource.getContentStream(sourceAttachmentID);
+		
+		// Retrieve the target parent record
+		var grNewParent = new GlideRecord(targetRecordTable); // Table where target record resides
+		grNewParent.get(targetRecordSysID); // sysID of target record
+		
+		// Pass the target record, name of the new attachment with file extension, content type of
+		// the attachment (ex. application/pdf) and the attachment's content into the writeContentStream method
+		var gsaTarget = new GlideSysAttachment();
+		var newAtt = gsaTarget.writeContentStream(grNewParent, attachmentName,attachmentContentType,attContent);
+	}
+})(current, previous);
