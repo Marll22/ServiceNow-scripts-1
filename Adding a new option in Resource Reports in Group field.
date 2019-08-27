@@ -1,0 +1,606 @@
+var ResourceReportService = Class.create();
+ResourceReportService.prototype = {
+	WEEKLY: "w",
+	MONTHLY: "m",
+	LOG_SOURCE: "ResourceReport",
+	
+	initialize: function(gRequest) {
+		this.gRequest = gRequest;
+		this.resourceType = gRequest.getParameter('sysparm_resource_type');
+		this.group = gRequest.getParameter('sysparm_group');
+		this.role = gRequest.getParameter('sysparm_role');
+		this.groupBy = gRequest.getParameter('sysparm_group_by');
+		this.member = gRequest.getParameter('sysparm_group_members');
+		this.user = gRequest.getParameter('sysparm_user');
+		this.startDate = gRequest.getParameter('sysparm_start_date');
+		this.endDate = gRequest.getParameter('sysparm_end_date');
+		this.startDateGD = new GlideDate();
+		this.startDateGD.setValue(this.startDate);
+		this.endDateGD = new GlideDate();
+		this.endDateGD.setValue(this.endDate);
+		this.timeScale = gRequest.getParameter('sysparm_time_scale');
+		this.reportUnit = gRequest.getParameter('sysparm_report_unit');
+		if (JSUtil.nil(this.reportUnit))
+			this.reportUnit = 'hours';
+		this.task = gRequest.getParameter('sysparm_task');
+		this.resourcePlan = gRequest.getParameter('sysparm_resource_plan');
+		this.filterType = gRequest.getParameter('sysparm_filter_type');
+		this.filterSearchKey = gRequest.getParameter('sysparm_search_key');
+		this.filterPageLimit = parseInt(gRequest.getParameter('sysparm_page_limit'));
+		this.filterPageNumber = parseInt(gRequest.getParameter('sysparm_page_number'));
+		this.rmDateRangeHelper = new RMDateRangeHelper();
+		
+		this.rmQueryHelper = new RMQueryHelper();
+		
+		this.entityType = gRequest.getParameter('sysparm_entity_type');
+		this.entityId = gRequest.getParameter('sysparm_entity_id');
+		this.reportType = gRequest.getParameter('sysparm_report_type');
+		this.rmUsageAnalytics = new RMUsageAnalytics();
+	},
+	
+	getEntities: function() {
+		if (this.entityType == 'portfolio')
+			return this._getEntities('pm_portfolio', 'name');
+		if (this.entityType == 'program')
+			return this._getEntities('pm_program', 'short_description');
+		if (this.entityType == 'demand')
+			return this._getEntities('dmn_demand', 'short_description');
+		if (this.entityType == 'project')
+			return this._getEntities('pm_project', 'short_description');
+		if (this.entityType == 'group')
+			return this._getEntities('sys_user_group', 'name');
+		if (this.entityType == 'user')
+			return this._getEntities('sys_user', 'name');
+		if (this.entityType == 'otherTask') {
+			var query = 'sys_class_nameNOT INjavascript:rmTaskTables()';
+			return this._getEntities('task', 'short_description', query);
+		}
+	},
+	
+	getEntityTypes: function() {
+		var entityTypes = [{
+			id: "user",
+			text: gs.getMessage("User")
+		}, {
+			id: "group",
+			text: gs.getMessage("Group")
+		}];
+		if (this.reportType != 'allocation') {
+			if (GlidePluginManager.isActive("com.snc.demand_management"))
+				entityTypes.push({
+				id: "demand",
+				text: gs.getMessage("Demand")
+			});
+			if (GlidePluginManager.isActive("com.snc.project_management_v3"))
+				entityTypes.push({
+				id: "project",
+				text: gs.getMessage("Project")
+			});
+			if (GlidePluginManager.isActive("com.snc.program_management"))
+				entityTypes.push({
+				id: "program",
+				text: gs.getMessage("Program")
+			});
+			if (GlidePluginManager.isActive("com.snc.project_portfolio_suite"))
+				entityTypes.push({
+				id: "portfolio",
+				text: gs.getMessage("Portfolio")
+			});
+			entityTypes.push({
+				id: "otherTask",
+				text: gs.getMessage("Other Task")
+			});
+		}
+		return (new JSON()).encode({
+			data: entityTypes,
+			total: entityTypes.length
+		});
+	},
+	
+	getReportData: function() {
+		if (this.reportType == 'availability' || this.reportType == 'forecasted_utilization' || this.reportType == 'committed_utilization')
+			return this.getHeatMapData();
+		if (this.reportType == 'allocation')
+			return this.getStackData();
+		if (this.reportType == 'allocation_details')
+			return this.getPivotData();
+	},
+	
+	_populateChartData: function(resources, dateRanges, reportService, resourceType, setFilter) {
+		while (resources.next()) {
+			var rmResource = this._getRmResource(resources, dateRanges, resourceType, setFilter);
+			reportService.buildChartData(resources, resourceType, rmResource);
+		}
+	},
+	
+	getPivotData: function() {
+		this.rmUsageAnalytics.pivotReportLaunch(this.entityType, this.reportType);
+		var dateRanges = this._getDateRanges();
+		var dateLables = this._getDateLabels(dateRanges);
+		var pivotReportService = new RMPivotDataService(dateRanges, dateLables, this.reportType, this.reportUnit);
+		if (JSUtil.notNil(this.resourcePlan) && this.resourcePlan != 'all') {
+			var users = this._getResourcePlanUsers();
+			this._populateChartData(users, dateRanges, pivotReportService, 'user');
+		}
+		else if (this.entityType == 'user') {
+			var user = this._getUserRecord(this.entityId);
+			this._populateChartData(user, dateRanges, pivotReportService, 'user', true);
+		}
+		else if (this.entityType == 'group') {
+			if(this.entityId == 'my_groups'){
+				var groups = new GlideRecord('sys_user_group');
+				groups.addQuery('manager', gs.getUserID());
+				groups.addQuery('roles', 'pps_resource');
+				groups.query();
+				this._populateChartData(groups, dateRanges, pivotReportService, 'group');
+			}
+			
+			////KUSH-UFI STARTS
+			else if(this.entityId == 'ufi_all_groups'){
+				var allgroups = new GlideRecord('sys_user_group');
+				allgroups.addQuery('roles','pps_resource');
+				allgroups.query();
+				this._populateChartData(allgroups, dateRanges, pivotReportService,'group');
+			}
+		   ////KUSH-UFI END
+			
+			
+			
+			else{
+				var groupUsers;
+				var rmGroup = new ResourceManagementGroup(this.entityId);
+				if(JSUtil.notNil(this.member) && this.member !='all')
+					groupUsers = this._getUserRecord(this.member);
+				else
+					groupUsers = rmGroup.users();
+				this._populateChartData(groupUsers, dateRanges, pivotReportService, 'user', true);
+			}
+		}
+		else {
+			var refCol = this._getReferenceColumnForEntityInResourcePlan();
+			
+			var groups = this.rmQueryHelper.getGroupsHavingOverlappingResourcePlansForEntity(refCol, this.entityId, this.startDate, this.endDate);
+			this._populateChartData(groups, dateRanges, pivotReportService, 'group');
+			
+			var users = this.rmQueryHelper.getUsersHavingOverlappingResourcePlansForEntity(refCol, this.entityId, this.startDate, this.endDate);
+			this._populateChartData(users, dateRanges, pivotReportService, 'user');
+		}
+		var  pivotData = pivotReportService.getChartData();
+		if (this.resourcePlan && this.resourcePlan != 'all')
+			pivotData.title = gs.getMessage("Allocation Details: {0} - {1} to {2}", [this._getResourcePlanName(this.resourcePlan), this.startDateGD.getDisplayValue(), this.endDateGD.getDisplayValue()]);
+		else if(this.entityType == 'group' && this.entityId == 'my_groups')
+			pivotData.title = gs.getMessage("Allocation Details - {0} to {1}", [this.startDateGD.getDisplayValue(), this.endDateGD.getDisplayValue()]);
+		
+			//KUSH-UFI STARTS
+		else if(this.entityType == 'group' && this.entityId == 'ufi_all_groups')
+			pivotData.title = gs.getMessage("Allocation Details - {0} to {1}", [this.startDateGD.getDisplayValue(), this.endDateGD.getDisplayValue()]);
+		/////KUSH-UFI END
+		
+		
+		else
+			pivotData.title = gs.getMessage("Allocation Details: {0} - {1} to {2}", [this._getEntityName(this.entityId), this.startDateGD.getDisplayValue(), this.endDateGD.getDisplayValue()]);
+		return (new JSON()).encode(pivotData);
+	},
+	
+	getHeatMapData: function() {
+		this.rmUsageAnalytics.heatMapReportLaunch(this.entityType, this.reportType, this.reportType);
+		var dateRanges = this._getDateRanges();
+		var dateLabels = this._getDateLabels(dateRanges, this.timeScale);
+		var heatMapReportService = new RMHeatMapReportService(dateRanges, dateLabels, this.reportType, this.reportUnit);
+		var heatMapData = {};
+		if (this.groupBy == 'roles')
+			heatMapData = this.getHeatMapDataByRole(dateRanges, heatMapReportService);
+		else
+			heatMapData = this.getHeatMapDataByResource(dateRanges, heatMapReportService);
+		if (this.reportType == 'availability')
+			heatMapData.title = "Availability";
+		else if (this.reportType == 'forecasted_utilization')
+			heatMapData.title = "Forecasted Utilization";
+		else if (this.reportType == 'committed_utilization')
+			heatMapData.title = "Committed Utilization";
+		if (this.resourcePlan && this.resourcePlan != 'all')
+			heatMapData.title = gs.getMessage(" {0}: {1} - {2} to {3}", [heatMapData.title, this._getResourcePlanName(this.resourcePlan), this.startDateGD.getDisplayValue(), this.endDateGD.getDisplayValue()]);
+		else if(this.entityType == 'group' && this.entityId == 'my_groups')
+			heatMapData.title = gs.getMessage("{0} - {1} to {2}", [heatMapData.title, this.startDateGD.getDisplayValue(), this.endDateGD.getDisplayValue()]);
+		
+		//KUSH-UFI START
+		else if(this.entityType == 'group' && this.entityId == 'ufi_all_groups')
+			heatMapData.title = gs.getMessage("{0} - {1} to {2}", [heatMapData.title, this.startDateGD.getDisplayValue(), this.endDateGD.getDisplayValue()]);
+	//KUSH-UFI END
+		
+		else
+			heatMapData.title = gs.getMessage(" {0}: {1} - {2} to {3}", [heatMapData.title, this._getEntityName(this.entityId), this.startDateGD.getDisplayValue(), this.endDateGD.getDisplayValue()]);
+		return (new JSON()).encode(heatMapData);
+	},
+	
+	getHeatMapDataByRole: function(dateRanges, rmReportService){
+		var roles = [];
+		var usersByRoles = {};
+		var gr = new GlideRecord('user_has_resource_role');
+		if(this.role && this.role != 'all'){
+			gr.addQuery('role', this.role);
+		}
+		var sq = gr.addJoinQuery('sys_user_grmember', 'user', 'user');
+		sq.addCondition('group',  this.entityId);
+		gr.query();
+		while(gr.next()){
+			var resourceRole = gr.getValue('role');
+			var users = usersByRoles[resourceRole];
+			if(JSUtil.nil(users)){
+				users = [];
+				usersByRoles[resourceRole] = users;
+			}
+			users.push(gr.getValue('user'));
+			if(roles.indexOf(resourceRole) == -1){
+				roles.push(resourceRole);
+			}
+		}
+		var rmResource;
+		var roleRecords = new GlideRecord('resource_role');
+		roleRecords.addQuery('sys_id', 'IN', roles.join(','));
+		roleRecords.query();
+		while (roleRecords.next()) {
+			rmResource = this._getRmResource(roleRecords, dateRanges, 'role');
+			var roleUsers= usersByRoles[roleRecords.getValue('sys_id')];
+			rmResource.setUsersFilter(roleUsers);
+			rmResource.calculateHoursByPeriod();
+			rmReportService.buildChartData(roleRecords, 'role', rmResource);
+		}
+
+		return rmReportService.getChartData();
+	},
+	
+	getHeatMapDataByResource: function(dateRanges, rmReportService){
+		if (this.entityType == 'user') {
+			var user = this._getUserRecord(this.entityId);
+			this._populateChartData(user, dateRanges, rmReportService, 'user');
+		}
+		else if (this.entityType == 'group') {
+			if(this.entityId == 'my_groups'){
+				var groups = new GlideRecord('sys_user_group');
+				groups.addQuery('manager', gs.getUserID());
+				groups.addQuery('roles', 'pps_resource');
+				groups.query();
+				this._populateChartData(groups, dateRanges, rmReportService, 'group');
+			}
+			//KUSH-UFI START
+			else if(this.entityId == 'ufi_all_groups'){
+				var allgroups = new GlideRecord('sys_user_group');
+				allgroups.addQuery('roles','pps_resource');
+				allgroups.query();
+				this._populateChartData(allgroups, dateRanges, rmReportService,'group');
+			}
+			//KUSH-UFI END
+			
+			
+			else{
+				var rmGroup = new ResourceManagementGroup(this.entityId);
+				var groupUsers = rmGroup.users();
+				this._populateChartData(groupUsers, dateRanges, rmReportService, 'user');
+			}
+		} else if (this.resourcePlan && this.resourcePlan != 'all') {
+			var users = this._getResourcePlanUsers();
+			this._populateChartData(users, dateRanges, rmReportService, 'user');
+		}
+		else {
+			var refCol = this._getReferenceColumnForEntityInResourcePlan();
+			var users = this.rmQueryHelper.getUsersHavingOverlappingResourcePlansForEntity(refCol, this.entityId, this.startDate, this.endDate);
+			this._populateChartData(users, dateRanges, rmReportService, 'user');
+			startRowIndex = users.getRowCount();
+			
+			var groups = this.rmQueryHelper.getGroupsHavingOverlappingResourcePlansForEntity(refCol, this.entityId, this.startDate, this.endDate);
+			this._populateChartData(groups, dateRanges, rmReportService, 'group');
+		}
+		return rmReportService.getChartData();
+		
+	},
+	
+	_getDateValues: function(dateRanges) {
+		var dateValues = [];
+		for (var i = 0; i < dateRanges.length; i++) {
+			var dateValue = {};
+			dateValue.start = dateRanges[i].start.getDate().getValue();
+			dateValue.end = dateRanges[i].end.getDate().getValue();
+			dateValues.push(dateValue);
+		}
+		return dateValues;
+	},
+	
+	_getUserRecord: function(userId) {
+		var user = new GlideRecord('sys_user');
+		user.addQuery('sys_id', userId);
+		user.query();
+		return user;
+	},
+	
+	_getReferenceColumnForEntityInResourcePlan: function() {
+		var pluginManager = new GlidePluginManager();
+		var isPpsActive = pluginManager.isActive('com.snc.project_portfolio_suite');
+		
+		var refCol = this.entityType;
+		if (this.entityType == 'project' && isPpsActive)
+			refCol = 'top_task';
+		else if (this.entityType == 'program')
+			refCol = 'program';
+		else if (this.entityType == 'portfolio')
+			refCol = 'portfolio';
+		else
+			refCol = 'task';
+		
+		return refCol;
+	},
+	
+	_getRmResource: function(resourceGr, dateRanges, resourceType, setFilter) {
+		var rmResource;
+		if (resourceType == 'user') {
+			rmResource = new ResourceManagementUser(resourceGr.getValue('sys_id'));
+			if(!JSUtil.nil(this.resourcePlan) && this.resourcePlan != 'all'){
+				rmResource.setConfirmedFilter('allocation.resource_plan.sys_id=' + this.resourcePlan);
+				rmResource.setRequestedFilter('resource_plan.sys_id=' + this.resourcePlan);
+				rmResource.setAllocatedFilter('allocation.resource_plan.sys_id=' + this.resourcePlan);
+			}
+			rmResource.setLookupRanges(dateRanges);
+			if(JSUtil.notNil(setFilter) && setFilter)
+				rmResource.setSpecificMembersCheckForResourceReports();
+			
+		}else if (resourceType == 'role') {
+            rmResource = new ResourceManagementRole(resourceGr.getValue('sys_id'));
+            rmResource.setLookupRanges(dateRanges);
+		}
+		else {
+			rmResource = new ResourceManagementGroup(resourceGr.getValue('sys_id'));
+			rmResource.setLookupRanges(dateRanges);
+			rmResource.calculateHoursByPeriod();
+			if(JSUtil.notNil(setFilter) && setFilter)
+				rmResource.setSpecificMembersCheckForResourceReports();
+		}
+		return rmResource;
+	},
+	
+	getStackData: function() {
+		this.rmUsageAnalytics.stackReportLaunch(this.entityType, this.reportType);
+		if (this.entityType != 'user' && this.entityType != 'group')
+			return;
+
+		var dateRanges = this._getDateRanges();
+		var rmResource;
+		if (this.entityType == 'group') {
+			if(JSUtil.notNil(this.member) && this.member != 'all')
+				rmResource = new ResourceManagementUser(this.member);
+			else
+				rmResource = new ResourceManagementGroup(this.entityId);
+		}
+		else
+			rmResource = new ResourceManagementUser(this.entityId);
+		rmResource.setSpecificMembersCheckForResourceReports();
+		rmResource.setLookupRanges(dateRanges);
+		var dateLabels = this._getDateLabels(dateRanges, this.timeScale);
+		var rmReportService = new RMStackReportService(dateRanges, dateLabels, this.reportType, this.reportUnit);
+		var stackData = rmReportService.buildChartData(rmResource);
+		stackData.title = gs.getMessage("Allocation: {0} - {1} to {2}", [this._getEntityName(this.entityId), this.startDateGD.getDisplayValue(), this.endDateGD.getDisplayValue()]);
+		return (new JSON()).encode(stackData);
+	},
+	
+	_getEntities: function(tableName, displayColumn, query) {
+		var gr = new GlideRecord(tableName);
+		gr.addActiveQuery();
+		if (query)
+			gr.addEncodedQuery(query);
+		if (this.entityType == 'group' || this.entityType == 'user')
+			gr.addQuery('roles', 'pps_resource');
+		gr = this._addFilterPageCondition(gr, displayColumn);
+		gr.query();
+		var defaultValue, secondDefaultValue; //Added secondDefaultValue variable
+		if(this.entityType == 'group' && this.reportType != 'allocation'){
+			defaultValue = {
+				id: 'my_groups',
+				text: gs.getMessage('My Groups')
+			};
+			//KUSH UFI START
+			secondDefaultValue = {
+				id : 'ufi_all_groups',
+				text : gs.getMessage('All Groups')
+			};
+			//KUSH UFI END
+		}
+		return this._encodeFilterReturnData(gr, 'sys_id', displayColumn, defaultValue, secondDefaultValue);
+	},
+	
+	getRoles: function(){
+		var rolesGr = new GlideAggregate('user_has_resource_role');
+		var sq = rolesGr.addJoinQuery('sys_user_grmember', 'user', 'user');
+		sq.addCondition('group',  this.group);
+		rolesGr.groupBy('role');
+		rolesGr = this._addFilterPageCondition(rolesGr, 'role.role');
+		rolesGr.query();
+		return this._encodeFilterReturnData(rolesGr, 'role', 'role',{
+			id: 'all',
+			text: gs.getMessage('All Roles')
+		});
+	},
+	
+	getFilteredUsers: function() {
+		var usersGR;
+		if (this.group) {
+			usersGR = new GlideRecord('sys_user_grmember');
+			usersGR.addQuery('group', this.group);
+			usersGR = this._addFilterPageCondition(usersGR, 'user.name');
+			usersGR.query();
+			return this._encodeFilterReturnData(usersGR, 'user', 'user',{
+				id: 'all',
+				text: gs.getMessage('All Members')
+			});
+		}
+		else {
+			usersGR = new GlideRecord('sys_user');
+			usersGR = this._addFilterPageCondition(usersGR, 'name');
+			usersGR.query();
+			return this._encodeFilterReturnData(usersGR, 'sys_id', 'name');
+		}
+	},
+	
+	getResourcePlans: function() {
+		var resourcePlans, count, entityTable, entityColumn;
+		
+		if (this.entityType == 'project')
+			entityColumn = 'top_task';
+		else if (this.entityType == 'portfolio')
+			entityColumn = 'portfolio';
+		else if (this.entityType == 'program')
+			entityColumn = 'program';
+		else
+			entityColumn = 'task';
+		resourcePlans = [];
+		var gr = new GlideRecord('resource_plan');
+		gr.addQuery(entityColumn, this.entityId);
+		gr.query();
+		count = gr.getRowCount();
+		if (count > 0) {
+			resourcePlans.push({
+				id: 'all',
+				text: gs.getMessage('All Resource Plans')
+			});
+		}
+		while(gr.next()) {
+			var resourcePlan = {};
+			resourcePlan.id = gr.getValue('sys_id');
+			resourcePlan.text = gs.nil(gr.getValue('short_description')) ? gr.getValue('number') : gr.getValue('short_description');
+			resourcePlans.push(resourcePlan);
+		}
+		return (new JSON()).encode({
+			data: resourcePlans,
+			total: count
+		});
+	},
+	
+	getResourcePlanData: function() {
+		var resourcePlanData = {};
+		var gr = new GlideRecord('resource_plan');
+		gr.get(this.resourcePlan);
+		resourcePlanData.startDate = gr.start_date.getGlideObject().getDate().getDisplayValue();
+		resourcePlanData.endDate = gr.end_date.getGlideObject().getDate().getDisplayValue();
+		return (new JSON()).encode(resourcePlanData);
+	},
+	
+	_addFilterPageCondition: function(glideRecord, searchField) {
+		if (this.filterSearchKey)
+			glideRecord.addQuery(searchField,'CONTAINS',this.filterSearchKey);
+		if (this.filterPageLimit && this.filterPageNumber)
+			glideRecord.chooseWindow((this.filterPageNumber - 1)*this.filterPageLimit, this.filterPageNumber*this.filterPageLimit);
+		glideRecord.orderBy(searchField);
+		return glideRecord;
+	},
+	
+	_encodeFilterReturnData: function(glideRecord, idField, displayField, defaultEntry,secondDefaultEntry) {
+		var data = [];
+		var regex = new RegExp(this.filterSearchKey, "i");
+		if (defaultEntry && (!this.filterSearchKey  || defaultEntry.text.search(regex)!= -1) && (!this.filterPageNumber || this.filterPageNumber == 1))
+			data.push(defaultEntry);
+		
+			//KUSH-UFI STARTS
+		if (secondDefaultEntry && (!this.filterSearchKey  || secondDefaultEntry.text.search(regex)!= -1) && (!this.filterPageNumber || this.filterPageNumber == 1))
+			data.push(secondDefaultEntry);
+		//KUSH-UFI END
+		
+		while(glideRecord.next()) {
+			var d = {};
+			d.id = glideRecord.getValue(idField);
+			d.text = glideRecord[displayField].getDisplayValue();
+			data.push(d);
+		}
+		var count = glideRecord.getRowCount();
+		return (new JSON()).encode({
+			data: data,
+			total: count
+		});
+		
+	},
+	
+	_getResourcePlanUsers: function() {
+		var resourcePlanRec = new GlideRecord("resource_plan");
+		resourcePlanRec.get(this.resourcePlan);
+		var resourcePlan = new ResourcePlan(resourcePlanRec);
+		return resourcePlan.planUsers();
+	},
+	
+	_getDateRanges: function() {
+		var gdtStart = new GlideDate();
+		gdtStart.setValue(this.startDate);
+		var gdtEnd = new GlideDate();
+		gdtEnd.setValue(this.endDate);
+		
+		if(this.timeScale == this.WEEKLY)
+			return this.rmDateRangeHelper.getWeeklyDateRanges(gdtStart, gdtEnd);
+		else if (this.timeScale == this.MONTHLY)
+			return this.rmDateRangeHelper.getMonthlyDateRanges(gdtStart, gdtEnd);
+	},
+	
+	_getDateLabels: function(dateRanges){
+		var dateLabels;
+		if(this.timeScale == this.WEEKLY)
+			dateLabels = this.rmDateRangeHelper.getWeeklyDateLabels(dateRanges);
+		else if (this.timeScale == this.MONTHLY)
+			dateLabels = this.rmDateRangeHelper.getMonthlyDateLabels(dateRanges);
+		return dateLabels;
+	},
+	
+	_getColors:function(heatmapType){
+		if (heatmapType == 'forecasted_utilization')
+			heatmapType = 'committed_utilization';
+		var colors = {};
+		var dataColors = [];
+		var chartColors = new GlideChartFieldColors('resource_report','user');
+		colors.chartBorderColor = chartColors.get('heatmap_border_color');
+		dataColors.push(chartColors.get(heatmapType + '_1'));
+		dataColors.push(chartColors.get(heatmapType + '_2'));
+		dataColors.push(chartColors.get(heatmapType + '_3'));
+		if(heatmapType == 'committed_utilization'){
+			dataColors.push(chartColors.get(heatmapType + '_4'));
+			dataColors.push(chartColors.get(heatmapType + '_5'));
+		}
+		colors.dataColors = dataColors;
+		return colors;
+	},
+	
+	_getEntityName: function(entityId) {
+		
+		var entityName, table, displayColumn, gr;
+		if (this.entityType == "user") {
+			table = "sys_user";
+			displayColumn = "name";
+		} else if (this.entityType == "group") {
+			table = "sys_user_group";
+			displayColumn = "name";
+		} else if (this.entityType == "demand") {
+			table = "dmn_demand";
+			displayColumn = "short_description";
+		} else if (this.entityType == "project") {
+			table = "pm_project";
+			displayColumn = "short_description";
+		} else if (this.entityType == "program") {
+			table = "pm_program";
+			displayColumn = "short_description";
+		} else if (this.entityType == "portfolio") {
+			table = "pm_portfolio";
+			displayColumn = "name";
+		} else if (this.entityType == "otherTask") {
+			table = "task";
+			displayColumn = "short_description";
+		}
+		
+		gr = new GlideRecord(table);
+		gr.get(entityId);
+		entityName = gr.getDisplayValue(displayColumn);
+		
+		return entityName;
+		
+	},
+	
+	_getResourcePlanName: function(sys_id) {
+		var gr = new GlideRecord("resource_plan");
+		gr.get(sys_id);
+		return gr.getValue("short_description");
+	},
+	
+	type: 'ResourceReportService'
+};
