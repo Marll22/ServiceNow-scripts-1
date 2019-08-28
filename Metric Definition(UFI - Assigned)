@@ -1,0 +1,31 @@
+var assigned = current.assigned_to;
+
+if ((current.assigned_to != '' && current.reassignment_count != 0) || (current.assigned_to != '' && current.assignment_group != previous.assignment_group)){
+	
+	var grMet = new GlideRecord('metric_instance');
+	grMet.addQuery('id',current.sys_id);
+	grMet.addQuery('calculation_complete', false);
+	grMet.addQuery('definition.name','Assignment Group');
+	grMet.query();
+	
+	var startTime;
+	
+	if(grMet.next()){
+		startTime = grMet.getDisplayValue('start');
+	}
+	createMetric();
+}
+
+function createMetric() {
+	var mi = new MetricInstance(definition, current);
+	if (mi.metricExists() && current.reassignment_count == 0)
+		return false;
+	
+	var gr = mi.getNewRecord();
+	gr.start = startTime;
+	gr.end = current.sys_updated_on;
+	gr.value = current.getDisplayValue('assigned_to');
+	gr.duration = gs.dateDiff(gr.start, gr.end);
+	gr.calculation_complete = true;
+	gr.insert();
+}
