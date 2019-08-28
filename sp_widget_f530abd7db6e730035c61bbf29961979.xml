@@ -1,0 +1,1503 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<unload unload_date="2019-08-28 04:07:39">
+<sp_widget action="INSERT_OR_UPDATE">
+<category>custom</category>
+<client_script><![CDATA[function ($scope, $rootScope, $timeout, spUtil, $location) {
+
+	var c = this;
+	// 234567890
+	/* OBJECT FOR EACH FORM SECTION */
+	c.data.aboutYou = {};
+	c.data.reqBehalfOf = {};
+	c.data.reqInsuranceHistory = [];
+	c.data.reqClaimsHistory = {};
+	c.data.reqInformationClaim = {};
+	c.data.reqWrittenStolen = {};
+	c.data.reqInfoNoClaim = {};
+	c.data.reqInfoMibServices = {};
+	c.data.otherQuery = {};
+	c.data.reqVrn = {};	
+
+
+	c.data.previousAddressAboutYou = [];
+	c.data.previousAddressbehalOf= [];
+	c.data.vrn = []
+
+	/*var form = document.querySelector('form')
+	var triggerButton = document.querySelector('button')
+
+	triggerButton.onclick = function () {
+
+		// Form is invalid!
+		if (!form.checkValidity()) {
+			// Create the temporary button, click and remove it
+			var tmpSubmit = document.createElement('button')
+			form.appendChild(tmpSubmit);
+			tmpSubmit.click()
+			form.removeChild(tmpSubmit)	
+		} else {
+			// Form is valid, do whatever you like
+			//c.action();
+
+		}
+	}*/
+	
+
+
+
+
+	$scope.isFormValid = function() {
+		//debugger;
+		//if($scope.register_form.$valid){
+			//c.action();
+			
+		//}
+		if($scope.register_form.$error.required.length == 1){
+			//console.log("Array Length is Zero")
+			c.action();
+		}else{
+			//console.log($scope.register_form.$error.required.length);
+			//console.log($scope.register_form.$error.required);
+		return;
+		}
+		
+		//console.log('form valid?: ', $scope.register_form.$valid);
+		
+	};
+
+	$scope.previousAddressAboutY = [{}];
+	$scope.vehicleRegistrationsNumber = [{}];
+	$scope.vehiclesraNumber = [{}];
+	$scope.previousAddressBehalfOf = [{}];
+
+	$scope.addAddressAboutY = function() {
+		var previousAddress = {};
+		$scope.previousAddressAboutY.push(previousAddress);
+		console.log( $scope.previousAddressAboutY)
+	}
+
+	$scope.removeAddressAboutY = function(user) {	
+		var index = $scope.previousAddressAboutY.indexOf(user);
+		$scope.previousAddressAboutY.splice(index,1);
+
+	}
+	$scope.addVehicleRegistrationsNumber = function(){
+
+		var vehicleNumber = {};
+		$scope.vehicleRegistrationsNumber.push(vehicleNumber);
+	}
+
+	$scope.removeVehicleRegistrationsNumber = function(removeVehicle){
+
+		var index = $scope.vehicleRegistrationsNumber.indexOf(removeVehicle);
+		$scope.vehicleRegistrationsNumber.splice(index,1);
+	}
+
+	$scope.addListOfvehicleNumner = function(){
+		var ListOfvehicleNum = {};
+		$scope.vehiclesraNumber.push(ListOfvehicleNum);
+		console.log($scope.vehiclesraNumber);
+	}
+
+	$scope.removeListOfVehicleNumner = function(vehicle){
+		var index = $scope.vehiclesraNumber.indexOf(vehicle);
+		$scope.vehiclesraNumber.splice(index,1);
+		console.log($scope.vehiclesraNumber);
+	}
+
+	$scope.addAddressBehalfOf = function(){
+		var previousAddressBehalfOf= {};
+		$scope.previousAddressBehalfOf.push(previousAddressBehalfOf);
+		console.log($scope.previousAddressBehalfOf);
+	}	
+
+	$scope.removeAddressBehalfOf = function(user) {	
+		var index = $scope.previousAddressBehalfOf.indexOf(user);
+		$scope.previousAddressBehalfOf.splice(index,1);
+
+	}
+
+	$scope.sendverificationCode = function(){
+
+
+		c.data.sendThecode = "verificationCode";
+
+		c.server.update().then(function(response) {
+			var data = response["result"];
+			if (response.status == 'success') {
+				c.success = response["message"];
+			} else if (response.status == 'error') {
+				c.success = 'There was an error processing your request';
+			}
+		});
+
+	}
+
+	$scope.verificationCode = function(){
+		console.log(c.enterTheCode);			
+		if(c.enterTheCode == c.data.verificationCodedata){
+			c.disableEmail=true
+			c. showAndHideEmailVerificationButton = false;
+			$(function () {
+				$('#verification-modal').modal('toggle');
+			});
+		}	
+	}
+
+
+
+
+	/* ENDOF OBJECT FOR EACH FORM SECTION */
+
+	c.captchaVerified = false;
+	c.policy = false;
+
+	/* NG-CLASS TRICK FOR MINUS / PLUS ON SECTION HEADERS */
+	c.aboutYou = true;
+	c.isOpenBehalf = false;
+	c.isOpenInsurance = true;
+	c.isOpenClaim = true;
+	c.isOpenInfo = true;
+	c.isOpenRecord = true;
+	c.isOpenNoClaim = true;
+	c.isOpenMIBServices = true;
+	c.isOpenVRN = true;
+	c.isOtherQuery = true;
+	c.isOpenProof = true;
+	c.showAndHideEmailVerificationButton = true;
+	/* NG-CLASS TRICK FOR MINUS / PLUS ON SECTION HEADERS */
+
+
+	c.proofIdenInfo = "if you are requesting your own information, in order for us to confirm your identity, please provide one form of ID confirming your address and another to confirm your name and date of birth (you are unable to use one form of ID for both). If you are requesting this information on behalf of another individual, please attach the relevant requested documentation in addition to their ID. If you are requesting this information on behalf of a deceased individual, you are only required to attach a death certificate. \n Please confirm in each drop down list as appropriate, then attach the documents.";
+
+	c.showSubmit = function() {
+		/*if(c.full_name && c.email && c.policy && c.current_address && c.tNumber && c.dob){
+			return false;
+		}
+		else{
+			return true;
+		} */
+	};
+
+
+	$scope.$watchGroup(["c.isreqbehalf", "c.reqInsurance","c.claimsHistory","c.reqInfoAboutMIB", "c.writtenOrStolenVehicles","c.noClaimsDiscountDatabase","c.reqSearchesOnVRN", "c.reqMibService","c.anyOtherQuery"],
+										 function(newValue, oldValue){
+
+		for(var i =0; i < newValue.length; i++ ){
+			if(newValue[i] == undefined || oldValue[i]  == undefined){
+
+			}else if( newValue[i] =="No" ){
+				alert("Please be aware your changes will be lost");
+				newValue[i] ="Yes" 
+			}
+		}
+
+		/*if( newValue[0] == undefined || oldValue[0]  == undefined){
+
+    }else if( newValue[0] =="No" ){
+			 alert(oldValue )
+		}*/
+	});
+
+
+	c.action = function() {
+
+		c.data.action = 'register';
+
+		//Variable Mapping for ABOUT YOU	
+		c.data.aboutYou.full_name = c.full_name;
+		c.data.aboutYou.dob = c.dob;
+		c.data.aboutYou.tNumber = c.tNumber;
+		c.data.aboutYou.email = c.email;
+		c.data.aboutYou.previous_name = c.previous_name;
+		c.data.aboutYou.confirm = c.confirm;
+		c.data.aboutYou.current_address = c.current_address;
+		c.data.aboutYou.residentFrom = c.residentFrom;
+		c.data.previousAddressAboutYou = $scope.previousAddressAboutY;
+		//c.data.aboutYou.policy = c.policy;
+
+		//Variable Mapping for REQUEST ON BEHALF OF
+		c.data.reqBehalfOf.isreqbehalf = c.isreqbehalf;
+		c.data.reqBehalfOf.deceased = c.deceased;
+		c.data.reqBehalfOf.fullNameDataSub = c.fullNameDataSub;
+		c.data.reqBehalfOf.dobDataSub = c.dobDataSub;
+		c.data.reqBehalfOf.prevNameDataSub = c.prevNameDataSub;
+		c.data.reqBehalfOf.justification = c.justification;
+		c.data.reqBehalfOf.addressDataSub = c.addressDataSub;
+		c.data.reqBehalfOf.residentFromBehalfOf = c.residentFromBehalfOf;
+		c.data.previousAddressbehalOf = $scope.previousAddressBehalfOf;
+
+		//Variable Mapping for REQUESTING YOUR INSURANCE HISTORY
+		c.data.reqInsuranceHistory = $scope.vehicleRegistrationsNumber
+
+		//Variable Mapping for REQUESTING YOUR CLAIMS HISTORY
+		c.data.reqClaimsHistory.claimsHistory = c.claimsHistory;
+		c.data.reqClaimsHistory.gender = c.gender
+		c.data.reqClaimsHistory.claimNatIns = c.claimNatIns;
+
+		//Variable Mapping for REQUESTING INFORMATION ABOUT A CLAIM WITH MIB
+		c.data.reqInformationClaim.reqInfoAboutMIB = c.reqInfoAboutMIB;
+		c.data.reqInformationClaim.accidentLocation = c.accidentLocation;
+		c.data.reqInformationClaim.vehicleRegistration = c.vehicleRegistration;
+		c.data.reqInformationClaim.thirdPartyVehReg = c.thirdPartyVehReg;
+		c.data.reqInformationClaim.accidentDate = c.accidentDate;
+		c.data.reqInformationClaim.referenceNumber = c.referenceNumber;
+		c.data.reqInformationClaim.natInsNum = c.natInsNum;
+
+		//Variable Mapping for REQUESTING A RECORD OF WRITTEN OFF OR STOLEN VEHICLES
+		c.data.reqWrittenStolen.writtenOrStolenVehicles = c.writtenOrStolenVehicles;
+		c.data.reqWrittenStolen.vin = c.vin;
+		c.data.reqWrittenStolen.vrn = c.vrn;
+
+		//Variable Mapping for REQUESTING INFORMATION FROM THE NO CLAIMS DISCOUNT DATABASE
+		c.data.reqInfoNoClaim.noClaimsDiscountDatabase = c.noClaimsDiscountDatabase;
+		c.data.reqInfoNoClaim.drivingLicense = c.drivingLicense;
+
+		//Variable Mapping for REQUESTING INFORMATION FROM MIB SERVICES
+		c.data.reqInfoMibServices.reqMibService = c.reqMibService;
+		c.data.reqInfoMibServices.nationalInsNum = c.nationalInsNum;
+
+		//REQUESTING SEARCHES CONDUCTED ON YOUR VRN USING THE ASKMID OWN VEHICLE SEARCH
+		c.data.vrn = $scope.vehiclesraNumber;
+
+		//Other Query
+		c.data.otherQuery.anyOtherQuery = c.anyOtherQuery;
+		c.data.otherQuery.provideInfo = c.provideInfo;
+		c.data.otherQuery.provideAdditionalInfo = c.provideAdditionalInfo;
+
+		//Variable Mapping for PROOF OF IDENTITY
+
+		c.data.reqVrn.proofOfIdentity = c.proofOfIdentity;
+		c.data.reqVrn.proofOfAnotherName = c.proofOfAnotherName;
+		c.data.reqVrn.proofOfAddress = c.proofOfAddress;
+		c.data.reqVrn.solicitor = c.solicitor;
+		c.data.reqVrn.proofOfConsent = c.proofOfConsent;
+		c.data.reqVrn.proofidentityRequire = c.proofidentityRequired; 
+		c.data.reqVrn.proofOfOwnership= c.proof_of_ownership;
+
+		c.server.update().then(function(response) {
+			var data = response["result"];
+			if (response.status == 'success') {
+				c.success = response["message"];
+			} else if (response.status == 'error') {
+				c.success = 'There was an error processing your request';
+			}
+		});
+
+
+	};
+
+	$scope.registrationInit = function(){};
+}]]></client_script>
+<controller_as>c</controller_as>
+<css>.form_link a {
+  color: -webkit-link;
+  text-decoration: underline
+}
+
+input[type="checkbox"]:focus, .form_link a:focus {
+  outline: auto -webkit-focus-ring-color !important
+}
+
+.hide-label{
+  visibility: hidden;
+}
+
+div.panel.b{
+  margin-bottom: 0;
+}
+
+.panel-heading{
+  background-color: #009E3B;
+}
+
+.submitBtn &gt; button{
+    width: 300px;
+    background-color: #83BB26;
+    border: none;
+}
+
+
+.form-group.required .control-label:before {
+  content:"* ";
+  color:red;
+}
+
+.instructions{
+  padding-right: 0px;
+  padding-left: 0px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+//Modal 
+
+@import url(https://fonts.googleapis.com/css?family=Roboto);
+
+/****** LOGIN MODAL ******/
+.loginmodal-container {
+  padding: 30px;
+  max-width: 350px;
+  width: 100% !important;
+  background-color: #F7F7F7;
+  margin: 0 auto;
+  border-radius: 2px;
+  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  font-family: roboto;
+}
+
+.loginmodal-container h1 {
+  text-align: center;
+  font-size: 1.6em;
+  font-family: roboto;
+}
+
+.loginmodal-container input[type=submit] {
+  width: 100%;
+  display: block;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.loginmodal-container input[type=text], input[type=password] {
+  height: 44px;
+  font-size: 16px;
+  width: 100%;
+  margin-bottom: 10px;
+  -webkit-appearance: none;
+  background: #fff;
+  border: 1px solid #d9d9d9;
+  border-top: 1px solid #c0c0c0;
+  /* border-radius: 2px; */
+  padding: 0 8px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
+
+.loginmodal-container input[type=text]:hover, input[type=password]:hover {
+  border: 1px solid #b9b9b9;
+  border-top: 1px solid #a0a0a0;
+  -moz-box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+  -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.loginmodal {
+  text-align: center;
+  font-size: 14px;
+  font-family: 'Arial', sans-serif;
+  font-weight: 700;
+  height: 36px;
+  padding: 0 8px;
+/* border-radius: 3px; */
+/* -webkit-user-select: none;
+  user-select: none; */
+}
+
+.loginmodal-submit {
+  /* border: 1px solid #3079ed; */
+  border: 0px;
+  color: #fff;
+  text-shadow: 0 1px rgba(0,0,0,0.1); 
+  background-color: #4d90fe;
+  padding: 17px 0px;
+  font-family: roboto;
+  font-size: 14px;
+  /* background-image: -webkit-gradient(linear, 0 0, 0 100%,   from(#4d90fe), to(#4787ed)); */
+}
+
+.loginmodal-submit:hover {
+  /* border: 1px solid #2f5bb7; */
+  border: 0px;
+  text-shadow: 0 1px rgba(0,0,0,0.3);
+  background-color: #357ae8;
+  /* background-image: -webkit-gradient(linear, 0 0, 0 100%,   from(#4d90fe), to(#357ae8)); */
+}
+
+.loginmodal-container a {
+  text-decoration: none;
+  color: #666;
+  font-weight: 400;
+  text-align: center;
+  display: inline-block;
+  opacity: 0.6;
+  transition: opacity ease 0.5s;
+} 
+
+.login-help{
+  font-size: 12px;
+}
+
+.test{
+  padding-bottom: 3px; 
+}</css>
+<data_table>sp_instance</data_table>
+<demo_data/>
+<description/>
+<docs display_value=""/>
+<field_list/>
+<has_preview>true</has_preview>
+<id/>
+<internal>false</internal>
+<link><![CDATA[function link(scope, element, attrs, controller) { 
+
+ }]]></link>
+<name>UFI - DSAR HTML v2 </name>
+<option_schema/>
+<public>true</public>
+<roles/>
+<script><![CDATA[(function($sp, input, data, options) {
+	"use strict";
+	data.is_logged_in = gs.getSession().isLoggedIn();
+	data.sys_id = '-1';
+	if (input && input.action == 'register' ) {
+		$sp.log('The server form is working');
+		var result = {};
+
+		var gr = new GlideRecord('u_dsar');
+		gr.initialize();
+
+		//ABOUT YOU
+		gr.setValue('u_full_name', JSUtil.nil(input.aboutYou.full_name) ? '' : input.aboutYou.full_name);
+		gr.setValue('u_date_of_birth', JSUtil.nil(input.aboutYou.dob) ? '' : input.aboutYou.dob);
+		gr.setValue('u_telephone_number', JSUtil.nil(input.aboutYou.tNumber) ? '' : input.aboutYou.tNumber);
+		gr.setValue('u_e_mail_address', JSUtil.nil(input.aboutYou.email) ? '' : input.aboutYou.email);
+		gr.setValue('u_validate_your_email_address', JSUtil.nil(input.aboutYou.confirm) ? '' : input.aboutYou.confirm);
+		gr.setValue('u_previous_name', JSUtil.nil(input.aboutYou.previous_name) ? '' : input.aboutYou.previous_name);
+		gr.setValue('u_current_address_customer', JSUtil.nil(input.aboutYou.current_address) ? '' : input.aboutYou.current_address);
+		gr.setValue('u_resident_from', JSUtil.nil(input.aboutYou.residentFrom) ? '' : input.aboutYou.residentFrom);
+		gr.setValue('short_description', 'MIB FORM WIDGET TEST');
+
+
+
+		var previousAddressAboutUs ="";		
+		for(var i = 0; i < input.previousAddressAboutYou.length; i++){			
+			previousAddressAboutUs += "Address: " + input.previousAddressAboutYou[i].address + "\n From: " +  dataformat(input.previousAddressAboutYou[i].from) + " To: " + dataformat(input.previousAddressAboutYou[i].to) + "\n\n";
+		}
+		gr.setValue('u_previous_address', previousAddressAboutUs);
+
+		//REQUESTING ON BEHALF OF
+		gr.setValue('u_request_on_behalf_of', JSUtil.nil(input.reqBehalfOf.isreqbehalf) ? '' : input.reqBehalfOf.isreqbehalf);
+		gr.setValue('u_deceased', JSUtil.nil(input.reqBehalfOf.deceased) ? '' :input.reqBehalfOf.deceased );
+		gr.setValue('u_full_name_behalf', JSUtil.nil(input.reqBehalfOf.fullNameDataSub) ? '' : input.reqBehalfOf.fullNameDataSub);
+		gr.setValue('u_date_of_birth_behalf', JSUtil.nil(input.reqBehalfOf.dobDataSub) ? '' : input.reqBehalfOf.dobDataSub);
+		gr.setValue('u_previous_name_behalf',  JSUtil.nil(input.reqBehalfOf.prevNameDataSub) ? '' input.reqBehalfOf.prevNameDataSub);
+		gr.setValue('u_justification_behalf', JSUtil.nil(input.reqBehalfOf.justification) ? '' input.reqBehalfOf.justification);
+		gr.setValue('u_applicable_address', JSUtil.nil(input.reqBehalfOf.addressDataSub) ? '' input.reqBehalfOf.addressDataSub);
+		gr.setValue('u_resident_from_behalf', JSUtil.nil(input.reqBehalfOf.residentFromBehalfOf) ? '' input.reqBehalfOf.residentFromBehalfOf);
+		
+		var previousAddressReqBehalfOf = "";
+	  
+		for(var i = 0; i < input.previousAddressbehalOf.length; i++){
+				previousAddressReqBehalfOf	+= "Address: " + input.previousAddressbehalOf[i].address + "\n From: " + dataformat(input.previousAddressbehalOf[i].from)	+ " To: " dataformat(input.previousAddressbehalOf[i].to) + "\n\n";
+			}
+		 gr.setValue('u_previous_address_behalf', previousAddressReqBehalfOf);
+							
+
+		//REQUESTING YOUR INSURANCE HISTORY
+		var insuranceHistory ="";		
+		for(var i = 0; i < input.reqInsuranceHistory.length; i++){			
+			insuranceHistory += "Address: " + input.reqInsuranceHistory[i].address + "\n From: " +  dataformat(input.reqInsuranceHistory[i].from) + " To: " + dataformat(input.reqInsuranceHistory[i].to) + "\n\n";
+		}
+		gr.setValue('u_please_list_the_vehicle_registrations_number_s_vrn_for_all_vehicles_you_would_', insuranceHistory);
+		$sp.log(JSON.stringify(input.reqInsuranceHistory));
+
+
+		//REQUESTING YOUR CLAIMS HISTORY
+		gr.setValue('u_national_insurance_number',input.reqClaimsHistory.claimNatIns.toString());
+		gr.setValue('u_gender',input.reqClaimsHistory.gender.toString());
+		$sp.log(input.reqClaimsHistory.gender.toString());
+
+		//REQUESTING INFORMATION ABOUT A CLAIM WITH MIB
+		gr.setValue('u_location_of_accident',input.reqInformationClaim.accidentLocation);
+		gr.setValue('u_your_vehicle_registration',input.reqInformationClaim.vehicleRegistration);
+		gr.setValue('u_third_party_vehicle_registration_number',input.reqInformationClaim.thirdPartyVehReg);
+		gr.setValue('u_accident_date',input.reqInformationClaim.accidentDate);
+		gr.setValue('u_claims_reference_number',input.reqInformationClaim.referenceNumber);
+		gr.setValue('u_national_insurance_number_mib_claims',input.reqInformationClaim.natInsNum);
+
+		//REQUESTING A RECORD OF WRITTEN OFF OR STOLEN VEHICLES
+		gr.setValue('u_vehicle_identification_number_vin',input.reqWrittenStolen.vin);
+		gr.setValue('u_national_insurance_number_miaftr',input.reqWrittenStolen.vrn );
+
+		//REQUESTING INFORMATION FROM THE NO CLAIMS DISCOUNT DATABASE
+		gr.setValue('u_driving_license_number',input.reqInfoNoClaim.drivingLicense);
+
+		//REQUESTING INFORMATION FROM MIB SERVICES
+		gr.setValue('u_national_insurance_number_mib_services',input.reqInfoMibServices.nationalInsNum );
+
+		//REQUESTING SEARCHES CONDUCTED ON YOUR VRN USING THE ASKMID OWN VEHICLE SEARCH
+
+		var vrn ="";		
+		for(var i = 0; i < input.vrn.length; i++){			
+			vrn += "Address: " + input.vrn[i].vehicleNumner + "\n From: " +  dataformat(input.vrn[i].from) + " To: " + dataformat(input.vrn[i].to) + "\n\n";
+		}
+
+
+		//Other Query
+		gr.setValue('u_other_services', input.otherQuery.anyOtherQuery);
+		gr.setValue('u_information_on_your_query', input.otherQuery.provideInfo);
+		gr.setValue('u_please_provide_additional_information_on_your_query', input.otherQuery.provideAdditionalInfo);
+
+		//PROOF OF IDENTITY
+		gr.setValue('u_proof_of_identity',input.reqVrn.proofOfIdentity);
+		gr.setValue('u_proof_of_address',input.reqVrn.proofOfAddress);
+		gr.setValue('u_proof_of_consent',input.reqVrn.proofOfConsent);
+		gr.setValue('u_proof_of_another_name',input.reqVrn.proofOfAnotherName);
+		gr.setValue('u_if_you_re_a_solicitor_please_provide_your_solicitor_regulation_authority_sra_n',input.reqVrn.solicitor);
+        gr.setValue('u_proof_of_identity',input.reqVrn.proofidentityRequire);
+        gr.setValue('u_proof_of_identity',input.reqVrn.proofOfOwnership);
+
+
+		var sys_id = gr.insert();
+
+
+		if(!gs.nil(sys_id)) {
+			data.sys_id = sys_id;
+			data.status = "success";
+			data.message = gs.getMessage("DSAR PUBLIC FORM SUCCESS");
+		} else {
+			data.status = "error";
+		}
+		$sp.log(data.sys_id)
+		data.result = result;
+		return data;	
+	}else if(input && input.sendThecode == 'verificationCode'){
+		data.verificationCodedata = Math.random().toString(36).substr(2, 9);
+		$sp.log(data.verificationCodedata);
+		new UFIDSARVerification().verificationCode('toby.jones@unifii.co.uk', data.verificationCodedata.toString());
+		//gs.eventQueue('ufi.dsar.verification',,'mohamed.ahmed@unifii.co.uk', data.verificationCodedata.toString());
+	}
+
+
+	function dataformat(data){
+		var gd = new GlideDate(); 
+		gd.setValue(data);
+		return gd.getByFormat("dd-MM-yyyy");
+	}
+
+})($sp, input, data, options);]]></script>
+<servicenow>false</servicenow>
+<sys_class_name>sp_widget</sys_class_name>
+<sys_created_by>Mo-UFI</sys_created_by>
+<sys_created_on>2019-07-15 16:04:20</sys_created_on>
+<sys_id>f530abd7db6e730035c61bbf29961979</sys_id>
+<sys_mod_count>486</sys_mod_count>
+<sys_name>UFI - DSAR HTML v2 </sys_name>
+<sys_package display_value="Global" source="global">global</sys_package>
+<sys_policy/>
+<sys_scope display_value="Global">global</sys_scope>
+<sys_update_name>sp_widget_f530abd7db6e730035c61bbf29961979</sys_update_name>
+<sys_updated_by>Mo-UFI</sys_updated_by>
+<sys_updated_on>2019-08-22 10:22:50</sys_updated_on>
+<template><![CDATA[<!-- TOP ROW FOR TITLE & LOGO -->
+<div class="row">
+  <div class="col-md-6" style="padding: 32px;">
+    <h2>Data Subject Access Request</h2>
+  </div>
+  <div class="col-md-6 pull-right text-right">
+    <img style="width: 200px;" src="mibLogo2.png">
+  </div>
+</div>
+
+<form ng-submit="$event.preventDefault()" class="form-horizontal" name="register_form">
+
+ <!-- -------------------------------------- REQUEST ON BEHALF OF -------------------------------------- -->
+ <div class="panel b" >
+    <div class="panel-heading bg-primary" ng-click="c.isOpenBehalf =! c.isOpenBehalf">
+      <h1 class="panel-title">${Request on Behalf Of}<i class="pull-right fa" ng-class="(c.isOpenBehalf) ? 'fa-plus' : 'fa-minus'" aria-hidden="true"></i></h1>
+    </div>
+    <!-- body -->
+    <div class="panel-body" ng-hide="c.isOpenBehalf">
+
+
+      <!-- Is this request on the behalf of someone else input-->
+      <div class="form-group required">        
+        <label class="col-sm-3 control-label" for="code">${Request on Behalf of} <i class="fa fa-info-circle" title="If you are requesting this DSAR on behalf of another individual select Yes."></i></label>
+        <div class="col-sm-6">
+          <select type="text" id="selectIsReqbehalf" class="dropdown" ng-model="c.isreqbehalf" class="form-control" ng-required="true">
+            <option value selected disabled>Please select an option</option>   
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div>
+      </div>
+
+      <div ng-if="c.isreqbehalf=='Yes'">
+
+        <!-- Are you making request on behalf of deceased person-->
+        <div class="form-group required">
+          <label class="col-sm-3 control-label">${Are you making request on behalf of deceased person?}</label>
+          <div class="col-sm-6">
+            <select type="text" id="selectDeceased" class="dropdown" ng-model="c.deceased" class="form-control" ng-required="true">
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Full Name of the data subject input-->
+        <div class="form-group required">
+          <label class="col-sm-3 control-label" for="last_name">${Full Name of the data subject}</label>
+          <div class="col-sm-6">
+            <input ng-model="c.fullNameDataSub" id="fullNameDataSub" name="fullNameDataSub" class="form-control" ng-required="true">
+          </div>
+        </div>
+
+        <!-- Date of birth of the data subject input-->
+        <div class="form-group required">
+          <label class="col-sm-3 control-label" for="last_name">${Date of birth of the data subject}</label>
+          <div class="col-sm-6">
+
+            <input type="date" ng-model="c.dobDataSub" id="dobDataSub" name="dobDataSub" class="form-control" style="padding-top:0px;" ng-required="true">
+          </div>
+        </div>
+
+        <!-- Previous Name of the data subject input-->
+        <div class="form-group">
+          <label class="col-sm-3 control-label" for="last_name">${Previous Name of the data subject}</label>
+          <div class="col-sm-6">
+            <textarea ng-model="c.prevNameDataSub" id="prevNameDataSub" name="prevNameDataSub" class="form-control" rows="4" cols="50"></textarea>
+          </div>
+        </div>
+
+        <!-- Justification for you raising the request on behalf of another. input-->
+        <div class="form-group">
+          <label class="col-sm-3 control-label" for="last_name">${Justification for you raising the request on behalf of another}</label>
+          <div class="col-sm-6">
+            <textarea ng-model="c.justification" id="justification" name="justification" class="form-control" rows="4" cols="50"></textarea>
+          </div>
+        </div>
+
+        <!-- Current or last known address of the data subject input-->
+        <div class="form-group required">
+          <label class="col-sm-3 control-label" for="last_name">${Current or last known address of the data subject}</label>
+          <div class="col-sm-6">
+            <textarea ng-model="c.addressDataSub" id="addressDataSub" name="addressDataSub" class="form-control" rows="4" cols="50" ng-required="true"></textarea>
+          </div>
+        </div>
+
+        <!-- Resident from input-->
+        <div class="form-group">
+          <label class="col-sm-3 control-label" for="last_name">${Resident From}</label>
+          <div class="col-sm-6">
+            <input type="date" ng-model="c.residentFromBehalfOf" id="residentFrom" name="residentFrom" class="form-control" style="padding-top:0px;">
+          </div>
+        </div>
+
+
+
+        <div class = "form-group">
+          <label class="col-sm-3 control-label" for="previous_name" data-toggle="tooltip" >${Previous Address of Data Subject} <i class="fa fa-info-circle" title="Please provide details of your last address for the last 7 years as some of our data services hold this information for 7 years."></i> </label>
+  
+  
+          <div class="col-sm-6">
+            <div  ng-repeat="addressBehalfOf in previousAddressBehalfOf"> 
+              <div >
+                <a href="" ng-click="removeAddressBehalfOf(addressBehalfOf)" class="top-menu pull-right"><span class="glyphicon glyphicon-trash"></span></a>
+              </div>
+  
+  
+              <label>Address</label>
+              <textarea class= "form-control form-group-sm" style="height:64px" ng-model="addressBehalfOf.address"> </textarea>  
+  
+              <div class="col-xs-6 " style=" padding-left: 0px;">
+                <label for="from">From:</label>
+                <input type="date" class="form-control" id="from" name="from" ng-model="addressBehalfOf.from">
+              </div>
+              <div class="col-xs-6" style=" padding-right: 0px;">
+                <label for="to">To:</label>
+                <input type="date" class="form-control" id="to" name="to" ng-model="addressBehalfOf.to">
+              </div>
+  
+            </div>
+            <div>       
+              <a href="" class="top-menu pull-right" ng-click="addAddressBehalfOf()"><span class="glyphicon glyphicon-plus"></span></a>
+            </div>
+          </div>
+        </div> 
+
+
+
+
+
+
+
+      </div>
+    </div>
+  </div>
+
+  <!-- -------------------------------------- ABOUT YOU -------------------------------------- -->
+  <div class="panel b" >
+    <!-- header -->
+    <div class="panel-heading bg-primary" ng-click="c.aboutYou =! c.aboutYou">
+      <h1 class="panel-title">${About You}<i class="pull-right fa" ng-class="(c.aboutYou) ? 'fa-plus' : 'fa-minus'" aria-hidden="true"></i></h1>
+    </div>
+    <!-- body -->
+    <div class="panel-body" ng-hide="c.aboutYou" >
+
+      <!-- Full Name input-->
+      <div class="form-group required">
+        <label class="col-sm-3 control-label" for="full_name">${Full Name}</label>
+        <div class="col-sm-6">
+          <input ng-model="c.full_name" id="full_name" name="full_name" placeholder="${Full Name}" class="form-control"  ng-required="true">
+        </div>
+      </div>
+
+      <!-- DOB input-->
+      <div class="form-group required" ng-if="c.isreqbehalf=='No'">
+        <label class="col-sm-3 control-label" for="dob">${Date of Birth}</label>
+        <div class="col-sm-6">
+          <input type="date" ng-model="c.dob" id="dob" name="dob" class="form-control" style="padding-top:0px;" ng-required="true">
+        </div>
+      </div>
+
+      <!-- Telephone Number input-->
+      <div class="form-group required">
+        <label class="col-sm-3 control-label" for="tNumber">${Telephone Number}</label>
+        <div class="col-sm-6">
+          <input ng-model="c.tNumber" id="tNumber" name="tNumber" placeholder="${phone number}" class="form-control" ng-required="true">
+        </div>
+      </div>
+
+      <!-- Email input-->
+      <div class="form-group required">
+        <label class="col-sm-3 control-label" for="email">${Email Address}</label>
+        <div class="col-sm-6">
+          <input type="email" ng-model="c.email" id="email" name="email" placeholder="${Email address}" class="form-control" ng-required="true" ng-pattern="/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/" ng-disabled="c.disableEmail">
+        </div>
+      </div>
+
+      <!-- Confirm Email -->
+      <div class="form-group required">
+        <label class="col-sm-3 control-label" for="email">${Confirm Email Address}</label>
+        <div class="col-sm-6">
+          <input type="email" ng-model="c.confirm" id="email" name="confirm" placeholder="${Confirm Email address}" class="form-control" ng-required="true" ng-pattern="c.email" ng-disabled="c.disableEmail">
+        </div>
+        <span ng-show="c.email != c.confirm">Emails have to match!</span>       
+      </div>
+      <div class="form-group" ng-if="c.email == c.confirm && c.email.length > 0 && c.confirm.length > 0 && c.showAndHideEmailVerificationButton ==true ">
+        <div class="control-label" style="text-align: center;">
+          <button class="btn btn-primary btn-sm" type="submit" data-toggle="modal" data-target="#verification-modal" ng-click="sendverificationCode()">Verify Email</button>
+        </div>
+      </div>
+      <!-- Previous Name input-->
+      <div class="form-group">
+        <label class="col-sm-3 control-label" for="previous_name">${Previous Name}</label>
+        <div class="col-sm-6">
+          <input ng-model="c.previous_name" id="previous_name" name="previous_name" placeholder="${Previous Name}" class="form-control" ng-required="false">
+        </div>
+      </div>
+
+      <!-- Current Address input-->
+      <div class="form-group required">
+        <label class="col-sm-3 control-label" for="current_address">${Current Address}</label>
+        <div class="col-sm-6">
+          <input ng-model="c.current_address" id="current_address" name="current_address" placeholder="${Current Address}" class="form-control" ng-required="true">
+        </div>
+      </div>
+
+      <!--Resident From Input-->
+      <div class="form-group">
+        <label class="col-sm-3 control-label" for="last_name">${Resident From}</label>
+        <div class="col-sm-6">
+          <input type="date" ng-model="c.residentFrom" id="residentFrom" name="residentFrom" class="form-control" style="padding-top:0px;">
+        </div>
+      </div>   
+
+      <!-- Previous Address Input-->
+
+      <!--<a href="" class="top-menu pull-right" ng-click="addUser()"><span class="glyphicon glyphicon-plus"></span></a>
+<div ng-repeat="user in users">    
+<input ng-model="user.firstName" class="users-container-inputs-text" type="text" placeholder="First Name"/>
+<input ng-model="user.lastName" class="users-container-inputs-text" type="text" placeholder="Last Name"/>
+<input ng-model="user.address" class="users-container-inputs-text" type="text" placeholder="Address"/>
+<a class="users-container-inputs-button" ng-click="removeUser(user)">X</a>
+</div>-->
+
+
+      <div class = "form-group">
+        <label class="col-sm-3 control-label" for="previous_name" data-toggle="tooltip" >${Previous Address} <i class="fa fa-info-circle" title="Please provide details of your last address for the last 7 years as some of our data services hold this information for 7 years. If you're requesting on behalf of someone else then please fill this in the next section. "></i> </label>
+
+
+        <div class="col-sm-6">
+          <div  ng-repeat="addressAboutY in previousAddressAboutY"> 
+            <div >
+              <a href="" ng-click="removeAddressAboutY(addressAboutY)" class="top-menu pull-right"><span class="glyphicon glyphicon-trash"></span></a>
+            </div>
+
+
+            <label>Address</label>
+            <textarea class= "form-control form-group-sm" style="height:64px" ng-model="addressAboutY.address"> </textarea>  
+
+            <div class="col-xs-6 " style=" padding-left: 0px;">
+              <label for="from">From:</label>
+              <input type="date" class="form-control" id="from" name="from" ng-model="addressAboutY.from">
+            </div>
+            <div class="col-xs-6" style=" padding-right: 0px;">
+              <label for="to">To:</label>
+              <input type="date" class="form-control" id="to" name="to" ng-model="addressAboutY.to">
+            </div>
+
+          </div>
+          <div>       
+            <a href="" class="top-menu pull-right" ng-click="addAddressAboutY()"><span class="glyphicon glyphicon-plus"></span></a>
+          </div>
+        </div>
+      </div> 
+
+
+
+
+
+
+      <!-- Privacy Policy & Terms conditions -->
+      <!--<div class="form-group col-sm-12 input-group-checkbox">
+<div class="col-sm-12 form_link" tabindex="0">
+<label class="col-sm-3 control-label hide-label" for="checkbox_agree">Privacy Policy</label>
+<input ng-model="c.policy" id="checkbox_agree" class="checkbox_agree" type="checkbox" name="policy">
+I agree to the <a href="/sn_customerservice_registration_privacy_policy_doc.do" target="_blank">Privacy Policy</a>
+and<a href="/sn_customerservice_registration_terms_doc.do" target="_blank">Terms and Conditions</a>
+</div>
+</div>
+<input id="sitekey" type="hidden" value={{c.data.captchaSiteKey}}>     --> 
+
+    </div>
+  </div> 
+
+  <!-- -------------------------------------- REQUESTING AN INSURANCE HISTORY -------------------------------------- -->
+  <div class="panel b">
+    <div class="panel-heading bg-primary" ng-click="c.isOpenInsurance =! c.isOpenInsurance">
+      <h1 class="panel-title">${Requesting an insurance history}<i class="pull-right fa" ng-class="(c.isOpenInsurance) ? 'fa-plus' : 'fa-minus'" aria-hidden="true"></i></h1>
+    </div>
+    <!-- body -->
+    <div class="panel-body" id="requestInsuranceHistory" ng-hide="c.isOpenInsurance">
+
+      <!-- Requesting your insurance history input-->
+      <div class="form-group">
+
+        <label class="col-sm-3 control-label" for="code">${Requesting an insurance history} <i class="fa fa-info-circle" title="The Motor Insurance Database (MID) is the central record of all insured vehicles in the UK. To check free of charge if your vehicle is listed as insured on the MID, you can visit www.askMID.com.
+
+The easiest way to request the information the Motor Insurers' Bureau (MIB) holds about you regarding who you are insured with, or have been insured with in the past seven years, is to complete the following Data Subject Access Request (DSAR) "></i> </label>
+        <div class="col-sm-6">
+          <select type="text" id="mySelect3" class="dropdown" ng-model="c.reqInsurance" class="form-control">
+            <option value selected disabled>Please select an option</option>   
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div>
+      </div> 
+
+      <div ng-if="c.reqInsurance=='Yes'">
+
+        <div class = "form-group">
+          <label class="col-sm-3 control-label" for="previous_name" data-toggle="tooltip" >${Please list the Vehicle Registrations Number(s) (VRN) for all vehicles you would like the information for} <i class="fa fa-info-circle" title="Please list the Vehicle Registrations Number(s) (VRN) for all vehicles you would like the information for"></i> </label>
+
+
+          <div class="col-sm-6">
+            <div  ng-repeat="vehicleNumber in vehicleRegistrationsNumber"> 
+              <div >
+                <a href="" ng-click="removeVehicleRegistrationsNumber(vehicleNumber)" class="top-menu pull-right"><span class="glyphicon glyphicon-trash"></span></a>
+              </div>
+
+
+              <label>Vehicle Registration Number</label>
+              <textarea class= "form-control form-group-sm" style="height:64px" ng-model="vehicleNumber.address"> </textarea>  
+
+              <div class="col-xs-6 " style=" padding-left: 0px;">
+                <label for="from">From:</label>
+                <input type="date" class="form-control" id="from" name="from" ng-model="vehicleNumber.from">
+              </div>
+              <div class="col-xs-6" style=" padding-right: 0px;">
+                <label for="to">To:</label>
+                <input type="date" class="form-control" id="to" name="to" ng-model="vehicleNumber.to">
+              </div>
+
+            </div>
+            <div>       
+              <a href="" class="top-menu pull-right" ng-click="addVehicleRegistrationsNumber()"><span class="glyphicon glyphicon-plus"></span></a>
+            </div>
+          </div>
+        </div> 
+
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- -------------------------------------- REQUESTING A CLAIMS HISTORY -------------------------------------- -->
+  <div class="panel b">
+    <div class="panel-heading bg-primary" ng-click="c.isOpenClaim =! c.isOpenClaim">
+      <h1 class="panel-title">${Requesting a claims history}<i class="pull-right fa" ng-class="(c.isOpenClaim) ? 'fa-plus' : 'fa-minus'" aria-hidden="true"></i></h1>
+    </div>
+    <!-- body -->
+    <div class="panel-body" id="requestClaimHistory" ng-hide="c.isOpenClaim">   
+
+      <!-- Requesting your claims history input-->
+      <div class="form-group">
+        <label class="col-sm-3 control-label" for="code">${Requesting a claims history} <i class="fa fa-info-circle" title="The Motor Insurers' Bureau (MIB) is the data controller for the claims and underwriting exchange (CUE), a central database of motor, home, personal injury and industrial illness incidents reported to insurance companies which may or may not have given rise to a claim.
+
+The easiest way to request the information MIB holds about you on the CUE database is to complete the following Data Subject Access Request (DSAR)"></i> </label>
+        <div class="col-sm-6">
+          <select type="text" id="mySelect4" class="dropdown" ng-model="c.claimsHistory" class="form-control">
+            <option value selected disabled>Please select an option</option>                 
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div></div>
+      <div ng-if="c.claimsHistory=='Yes'">
+
+
+        <!-- Gender input-->
+        <div class="form-group required">
+          <label class="col-sm-3 control-label" for="last_name">${Gender}</label> 
+          <div class="col-sm-6">
+            <select type="text" id="mySelect4" class="dropdown" ng-model="c.gender" class="form-control" required="true">
+              <option value selected disabled>Please select an option</option>   
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Unspecified</option>
+            </select></div></div>
+        <!-- National Insurance input-->
+        <div class="form-group">
+          <label class="col-sm-3 control-label" for="email"  data-toggle="tooltip" title="You can find your National Insurance number 
+                                                                                          on your National Insurance card, payslips, or letters from the Department for Work and Pensions or HM Revenue & Customs (HMRC).">${National Insurance Number}</label>
+          <div class="col-sm-6">
+            <input ng-model="c.claimNatIns" id="claimNatIns" name="claimNatIns" class="form-control" ng-pattern="/^[a-zA-Z]{2}[0-9]{6}[a-zA-Z]{1}$/">
+          </div>
+        </div>
+      </div>   
+    </div>
+  </div>
+
+  <!-- -------------------------------------- REQUESTING INFORMATION ABOUT A CLAIM WIH MIB -------------------------------------- -->
+  <div class="panel b">
+    <div class="panel-heading bg-primary" ng-click="c.isOpenInfo =! c.isOpenInfo">
+      <h1 class="panel-title">${Requesting information about a claim with MIB}<i class="pull-right fa" ng-class="(c.isOpenInfo) ? 'fa-plus' : 'fa-minus'" aria-hidden="true"></i></h1>
+    </div>
+    <!-- body -->
+    <div class="panel-body" id="requestClaimWithMib" ng-hide="c.isOpenInfo">
+      <!-- Requesting your claims history input-->
+      <div class="form-group">
+        <label class="col-sm-3 control-label"  data-toggle="tooltip" for="code">${Requesting information about a claim with MIB} <i class="fa fa-info-circle" title="Motor Insurers' Bureau (MIB) is here to compensate victims who have been involved in accidents with a driver who is not insured, or who leaves the scene. 
+
+The easiest way to request information MIB holds about you regarding a claim you have made with us, is to complete the following Data Subject Access Request (DSAR)."></i> </label>
+        <div class="col-sm-6">
+          <select type="text" id="mySelect5" class="dropdown" ng-model="c.reqInfoAboutMIB" class="form-control">
+            <option value selected disabled>Please select an option</option>                 
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div></div>
+      <div ng-if="c.reqInfoAboutMIB=='Yes'">
+
+
+        <!-- Location of accident input-->
+        <div class="form-group">
+          <label class="col-sm-3 control-label" for="last_name">${Location of Accident}</label>
+          <div class="col-sm-6">
+            <input ng-model="c.accidentLocation" id="location" name="location" placeholder="${location of Accident}" class="form-control">
+          </div>
+        </div>
+        <!-- Your Vehicle Registration input-->
+        <div class="form-group">
+          <label class="col-sm-3 control-label" for="email">${Your Vehicle Registration}</label>
+          <div class="col-sm-6">
+            <input ng-model="c.vehicleRegistration" id="vehicleRegistration" name="vehicleRegistration" placeholder="${your Vehicle Registration}" class="form-control">
+          </div>
+        </div>
+        <!-- Third party Vehicle Registration Number input-->
+        <div class="form-group">
+          <label class="col-sm-3 control-label" for="code">${Third party Vehicle Registration Number}</label>
+          <div class="col-sm-6">
+            <input ng-model="c.thirdPartyVehReg" id="thirdPartyVehReg" name="thirdPartyVehReg" placeholder="${Third party Vehicle Registration Number}" class="form-control">
+          </div>
+        </div>
+        <!-- Accident date input-->
+        <div class="form-group">
+          <label class="col-sm-3 control-label" for="last_name">${Accident date}</label>
+          <div class="col-sm-6">
+
+            <input type="date" ng-model="c.accidentDate" id="accidentDate" name="accidentDate" class="form-control" style="padding-top:0px;">
+          </div>
+        </div>
+        <!-- Claims Reference Number input-->
+        <div class="form-group">
+          <label class="col-sm-3 control-label" for="code">${Claims Reference Number}</label>
+          <div class="col-sm-6">
+            <input ng-model="c.referenceNumber" id="referenceNumber" name="referenceNumber" placeholder="${Claims Reference Number}" class="form-control">
+          </div>
+        </div>
+        <!-- National Insurance Number input-->
+        <div class="form-group">
+          <label class="col-sm-3 control-label" for="code" data-toggle="tooltip" title="You can find your National Insurance number on your National Insurance card, payslips, 
+                                                                                        or letters from the Department for Work and Pensions or HM Revenue & Customs (HMRC).">${National Insurance Number}</label>
+          <div class="col-sm-6">
+            <input ng-model="c.natInsNum" id="natInsNum" name="natInsNum" placeholder="${AA123456C}" class="form-control" ng-pattern="/^[a-zA-Z]{2}[0-9]{6}[a-zA-Z]{1}$/">
+          </div>
+        </div>
+      </div>   
+    </div>
+  </div>
+
+
+  <!-- -------------------------------------- REQUESTING A RECORD OF WRITTEN OFF OR STOLEN VEHICLES -------------------------------------- -->
+  <div class="panel b">
+    <div class="panel-heading bg-primary" ng-click="c.isOpenRecord =! c.isOpenRecord">
+      <h1 class="panel-title">${Requesting a record of written off or stolen vehicles}<i class="pull-right fa" ng-class="(c.isOpenRecord) ? 'fa-plus' : 'fa-minus'" aria-hidden="true"></i></h1>
+    </div>
+    <!-- body -->
+    <div class="panel-body" id="requestWrittenOffStolen" ng-hide="c.isOpenRecord">   
+      <!-- Requesting your claims history input-->
+      <div class="form-group">
+        <label class="col-sm-3 control-label" data-toggle="tooltip" for="code">${Requesting a record of written off or stolen vehicles} <i class="fa fa-info-circle" title="The Motor Insurers' Bureau (MIB) is the data controller for the Motor Insurers Anti-Fraud and Theft (MIAFTR) database, containing records of claims that have resulted in a written off or stolen vehicle. 
+
+If you have made a claim which has resulted in a written off or stolen vehicle, a record may exist on the MIAFTR database. The easiest way to request this information is to complete a Data Subject Access Request (DSAR). To check if a specific vehicle is listed as written off or stolen, you will need to carry out an independent Vehicle Provenance Check."></i> </label>
+
+        <div class="col-sm-6">
+          <select type="text" id="mySelect6" class="dropdown" ng-model="c.writtenOrStolenVehicles" class="form-control">
+            <option value selected disabled>Please select an option</option>   
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div></div>
+      <div ng-if="c.writtenOrStolenVehicles=='Yes'">
+
+
+        <!-- Vehicle Identification Number(VIN) input-->
+        <div class="form-group">
+          <label class="col-sm-3 control-label" for="vin">${Vehicle Identification Number(VIN)}</label>
+          <div class="col-sm-6">
+            <input ng-model="c.vin" id="vin" name="vin" placeholder="${enter your VIN}" class="form-control">
+          </div>
+        </div>
+        <!-- Vehicle Registration Number (VRN) input-->
+        <div class="form-group required">
+          <label class="col-sm-3 control-label" for="vrn">${Vehicle Registration Number (VRN)}</label>
+          <div class="col-sm-6">
+            <input ng-model="c.vrn" id="vrn" name="vrn" placeholder="${enter your VRN number}" class="form-control" required="true">
+          </div>
+        </div>
+      </div>   
+    </div>
+  </div>
+
+  <!-- -------------------------------------- REQUESTING INFORMATION FROM THE NO CLAIMS DISCOUNT DATABASE -------------------------------------- -->
+  <div class="panel b">
+    <div class="panel-heading bg-primary" ng-click="c.isOpenNoClaim =! c.isOpenNoClaim">
+      <h1 class="panel-title">${Requesting information from the No Claims Discount database}<i class="pull-right fa" ng-class="(c.isOpenNoClaim) ? 'fa-plus' : 'fa-minus'" aria-hidden="true"></i></h1>
+    </div>
+    <!-- body -->
+    <div class="panel-body" id="requestNoClaimDiscount" ng-hide="c.isOpenNoClaim">
+      <!-- Requesting your claims history input-->
+      <div class="form-group">
+        <label class="col-sm-3 control-label" data-toggle="tooltip" for="code">${Requesting information from the No Claims Discount database} <i class="fa fa-info-circle" title="The Motor Insurers' Bureau is the Data Controller for the MIB Hub No Claims Discount (NCD). The personal data received by MIB originates from the insurer or other authorised third party who collect the data directly from you. All NCD data is held for 48 hours after which it is deleted.
+The easiest way to request the information the MIB Hub NCD holds about you, is to complete this Data Subject Access Request."></i> </label>
+
+        <div class="col-sm-6">
+          <select type="text" id="mySelect7" class="dropdown" ng-model="c.noClaimsDiscountDatabase" class="form-control">
+            <option value selected disabled>Please select an option</option>   
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div></div>
+      <!-- Driving License Number input-->
+      <div class="form-group required" ng-if="c.noClaimsDiscountDatabase=='Yes'">
+        <label class="col-sm-3 control-label" for="dl">${Driving License Number}</label>
+        <div class="col-sm-6">
+          <input ng-model="c.drivingLicense" id="drivingLicense" name="drivingLicense" placeholder="${Driving License Number}" class="form-control" required="true">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- -------------------------------------- REQUESTING INFORMATION FROM MIB SERVICES -------------------------------------- -->
+  <div class="panel b">
+    <div class="panel-heading bg-primary" ng-click="c.isOpenMIBServices =! c.isOpenMIBServices">
+      <h1 class="panel-title">${Requesting information from MIB Services}<i class="pull-right fa" ng-class="(c.isOpenMIBServices) ? 'fa-plus' : 'fa-minus'" aria-hidden="true"></i></h1>
+    </div>
+    <!-- body -->
+    <div class="panel-body" id="requestInfoMibServices" ng-hide="c.isOpenMIBServices">    
+      <!-- Requesting your claims history input-->
+      <div class="form-group">
+        <label class="col-sm-3 control-label" for="code">${Requesting information from MIB Services} <i class="fa fa-info-circle" title="MIB Services which accesses the askCUE PI (personal injury) is an enquiry service which allows approved organisations to check records held on the CUE PI database before they submit a personal injury claim through the Claims Portal. Once a check is made, the requestor is provided with loss dates.
+
+The easiest way to request the information the Motor Insurers' Bureau (MIB) holds about you regarding if a search was conducted on our website in the last 3 years, is to complete the following Data Subject Access Request."></i> </label>
+
+        <div class="col-sm-6">
+          <select type="text" id="mySelect" class="dropdown" ng-model="c.reqMibService" class="form-control">
+            <option value selected disabled>Please select an option</option>   
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div></div>
+      <!-- National Insurance Number input-->
+      <div class="form-group" ng-if="c.reqMibService=='Yes'">
+        <label class="col-sm-3 control-label" for="first_name" data-toggle="tooltip" for="code">${National Insurance Number} <i class="fa fa-info-circle" title="You can find your National Insurance number on your National Insurance card, payslips, or letters from the Department for Work and Pensions or HM Revenue & Customs (HMRC)."></i> </label>
+        <div class="col-sm-6">
+          <input ng-model="c.nationalInsNum" id="nationalInsNum" name="nationalInsNum" placeholder="${AA123456C}" class="form-control">
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- -------------------------------------- REQUESTING SEARCHES CONDUCTED ON a VRN USING THE ASKMID OWN VEHICLE SEARCH -------------------------------------- -->
+  <div class="panel b">
+    <div class="panel-heading bg-primary" ng-click="c.isOpenVRN =! c.isOpenVRN">
+      <h1 class="panel-title">${Requesting searches conducted on a VRN using the askMID Own Vehicle search}<i class="pull-right fa" ng-class="(c.isOpenVRN) ? 'fa-plus' : 'fa-minus'" aria-hidden="true"></i></h1>
+    </div>
+    <!-- body -->
+    <div class="panel-body" id="requestVrnAskMID" ng-hide="c.isOpenVRN">
+
+      <div class="form-group">
+        <label class="col-sm-3 control-label" data-toggle="tooltip" for="code">${Requesting searches conducted on a VRN using the askMID Own Vehicle search} <i class="fa fa-info-circle" title="The Motor Insurance Database (MID) is the central record of all insured vehicles in the UK. To check free of charge if your vehicle is listed as insured on the MID, you can visit www.askMID.com. 
+The easiest way to request the information the Motor Insurers' Bureau (MIB) holds regarding when your vehicle may have been searched using this free service within the past 3 years, is to complete this Data Subject Access Request (DSAR)."></i> </label>
+
+        <div class="col-sm-6">
+          <select type="text" id="mySelect9" class="dropdown" ng-model="c.reqSearchesOnVRN" class="form-control">
+            <option value selected disabled>Please select an option</option>   
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </div>
+      </div> 
+      <div ng-if="c.reqSearchesOnVRN=='Yes'">
+
+        <div class = "form-group">
+          <label class="col-sm-3 control-label" for="previous_name" data-toggle="tooltip" >${Please list the Vehicle Registrations Number(s) (VRN) for all vehicles you would like the information for} <i class="fa fa-info-circle" title="Please list the Vehicle Registrations Number(s) (VRN) for all vehicles you would like the information for"></i> </label>
+
+
+          <div class="col-sm-6">
+            <div  ng-repeat="sraNum in vehiclesraNumber"> 
+              <div >
+                <a href="" ng-click="removeListOfVehicleNumner(sraNum)" class="top-menu pull-right"><span class="glyphicon glyphicon-trash"></span></a>
+              </div>
+
+
+              <label>Vehicle Registration Number</label>
+              <textarea class= "form-control form-group-sm" style="height:64px" ng-model="sraNum.vehicleNumner"> </textarea>  
+
+              <div class="col-xs-6 " style=" padding-left: 0px;">
+                <label for="from">From:</label>
+                <input type="date" class="form-control" id="from" name="from" ng-model="sraNum.from">
+              </div>
+
+              <div class="col-xs-6 " style=" padding-right: 0px;">
+                <label for="from">To:</label>
+                <input type="date" class="form-control" id="to" name="from" ng-model="sraNum.to">
+              </div>
+
+
+            </div>
+            <div>       
+              <a href="" class="top-menu pull-right" ng-click="addListOfvehicleNumner()"><span class="glyphicon glyphicon-plus"></span></a>
+            </div>
+          </div>
+        </div> 
+
+
+      </div>   
+    </div>
+  </div>
+
+
+  <!-- -------------------------------------- Other Query -------------------------------------- -->
+  <div class="panel b">
+    <div class="panel-heading bg-primary" ng-click="c.isOtherQuery =! c.isOtherQuery">
+      <h1 class="panel-title">${Other Query}<i class="pull-right fa" ng-class="(c.isOtherQuery) ? 'fa-plus' : 'fa-minus'" aria-hidden="true"></i></h1>
+    </div>
+    <!-- body -->
+    <div class="panel-body" id="proofOfId" ng-hide="c.isOtherQuery">  
+      <!-- Proof of Other Query-->
+      <div class="form-group ">
+        <label class="col-sm-3 control-label" for="code">${Do you have any other queries}</label>
+        <div class="col-sm-6">
+          <select ng-model="c.anyOtherQuery" class="form-control"> 
+            <option value selected disabled>Please select an option</option>
+            <option value="Yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+        </div>
+      </div>
+      <div ng-if="c.anyOtherQuery=='Yes'">
+
+        <!-- Location of accident input-->
+        <div class="form-group required">
+          <label class="col-sm-3 control-label" for="last_name">${Please provide information on your query below}</label>
+          <div class="col-sm-6">
+            <textarea ng-model="c.provideInfo" id="location" name="information" placeholder="${ provide information on your query below}" class="form-control" required="true"></textarea>
+          </div>
+        </div>
+        <!-- Your Vehicle Registration input-->
+        <div class="form-group">
+          <label class="col-sm-3 control-label" for="email">${Please provide additional information on your query}</label>
+          <div class="col-sm-6">
+            <textarea  ng-model="c.provideAdditionalInfo" id="additional" name="vehicleRegistration" placeholder="" class="form-control"> </textarea>
+          </div>
+        </div>
+
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- -------------------------------------- PROOF OF IDENTITY / Supporting Documents -------------------------------------- -->
+  <div class="panel b">
+    <div class="panel-heading bg-primary" ng-click="c.isOpenProof =! c.isOpenProof">
+      <h1 class="panel-title">${Supporting Documents} <i class="fa fa-info-circle" title="{{c.proofIdenInfo}}"></i>  <i class="pull-right fa" ng-class="(c.isOpenProof) ? 'fa-plus' : 'fa-minus'" aria-hidden="true"></i></h1>
+    </div>
+    <!-- body -->
+    <div class="panel-body" id="proofOfId" ng-hide="c.isOpenProof">
+
+
+
+      <div ng-switch="c.isreqbehalf">
+
+        <div ng-switch-when="Yes">
+
+          <!-- Proof of Identity input-->
+          <div class="form-group required" ng-if="c.deceased != 'Yes'" >
+            <label class="col-sm-3 control-label" for="code">${Proof of Identity} <i class="fa fa-info-circle" title="Require proof of ID for Data Subject"></i></label>
+            <div class="col-sm-6">
+              <select ng-model="c.proofOfIdentity" class="form-control" ng-required="true">
+                <option value selected disabled>Please select and option</option>   
+                <option value="valid_driving_license">Valid photocard Driving Licence(if not used for proof of address)</option>    
+                <option value="passport">Valid Passport</option> 
+                <option value="birth_certificate">Birth Certificate</option>  
+                <option value="id_card">Official ID Card</option>
+                <option value="death_certificate">Death Certificate</option>
+              </select>
+            </div>
+          </div>
+          <!-- Proof of another name input-->
+          <div class="form-group" ng-if="c.deceased != 'Yes'">
+            <label class="col-sm-3 control-label" for="code">${Proof of another name}</label>
+            <div class="col-sm-6">
+              <select ng-model="c.proofOfAnotherName" class="form-control">
+                <option value selected>None</option>   
+                <option value="mariage_license">Marriage Licence(if not used for proof of address)</option>    
+                <option value="decree_nisi">Decree nisi</option> 
+                <option value="deed_poll">Deed poll Notification</option>  
+                <option value="decree_absolute">Decree absolute</option>
+
+              </select>
+            </div>
+          </div>
+          <!-- Proof of Address Input-->
+          <div class="form-group required" ng-if="c.deceased != 'Yes'" >
+            <label class="col-sm-3 control-label" for="code">${Proof of Address} <i class="fa fa-info-circle" title="Require proof of address for Data Subject"></i></label>
+            <div class="col-sm-6">
+              <select ng-model="c.proofOfAddress" class="form-control">
+                <option value selected disabled>Please select and option</option>                
+                <option name="utility_bill">Utility or Local authority bill(Issued in last 3 months)</option>    
+                <option name="vehicle_registration">Current Vehicle Registration Document</option> 
+                <option name="mortgage_sl_statement">Mortgage or student loan statement(Issued in last 12 months)</option>  
+                <option name="hrmc">Correspondence from HMRC(Issued this financial year)</option>
+                <option name="dr_license">Valid photocard Driving Licence(if not used for proof of identity)</option>
+
+              </select>
+            </div>
+          </div>
+          <!-- Proof of Consent Input-->
+          <div class="form-group required" ng-if="c.deceased != 'Yes'">
+            <label class="col-sm-3 control-label" for="code">${Proof of Consent}</label>
+            <div class="col-sm-6">
+              <select ng-model="c.proofOfConsent" class="form-control" ng-required="true">
+                <option value selected>None</option>                 
+                <option name="signed_consent">Signed Consent</option>    
+                <option name="letter_of_authority">Letter of Authority</option> 
+                <option name="power_of_attorney">Power of Attorney</option>    
+              </select>
+            </div>
+          </div>
+          <div class="form-group" ng-if="c.deceased != 'Yes'">
+            <label class="col-sm-3 control-label" for="solicitor">${If you're a solicitor, please provide your Solicitor Regulation Authority (SRA) Number}</label>
+            <div class="col-sm-6">
+              <input ng-model="c.solicitor" id="solicitor" name="solicitor" placeholder="${enter your SRA}" class="form-control" >
+            </div>
+          </div>
+
+           <!-- Proof of Ownership-->
+      <div class="form-group required" ng-if="c.reqSearchesOnVRN=='Yes'">
+            <label class="col-sm-3 control-label" for="full_name">${Proof of Ownership}</label>
+            <div class="col-sm-6">
+              <input ng-model="c.proof_of_ownership" id="proof_of_ownership" name="proof_of_ownership" placeholder="${Proof of Ownership}" class="form-control"  ng-required="true">
+            </div>
+          </div>
+
+        </div>
+
+        <div ng-switch-when="No">
+
+          <!-- Proof of Identity input-->
+          <div class="form-group required" >
+            <label class="col-sm-3 control-label" for="code">${Proof of Identity} <i class="fa fa-info-circle" title="Require proof of ID for Data Subject"></i></label>
+            <div class="col-sm-6">
+              <select ng-model="c.proofOfIdentity" class="form-control" ng-required="true">
+                <option value selected disabled>Please select and option</option>   
+                <option value="valid_driving_license">Valid photocard Driving Licence(if not used for proof of address)</option>    
+                <option value="passport">Valid Passport</option> 
+                <option value="birth_certificate">Birth Certificate</option>  
+                <option value="id_card">Official ID Card</option>
+                <option value="death_certificate">Death Certificate</option>
+              </select>
+            </div>
+          </div>
+          <!-- Proof of another name input-->
+          <div class="form-group" >
+            <label class="col-sm-3 control-label" for="code">${Proof of another name}</label>
+            <div class="col-sm-6">
+              <select ng-model="c.proofOfAnotherName" class="form-control">
+                <option value selected>None</option>   
+                <option value="mariage_license">Marriage Licence(if not used for proof of address)</option>    
+                <option value="decree_nisi">Decree nisi</option> 
+                <option value="deed_poll">Deed poll Notification</option>  
+                <option value="decree_absolute">Decree absolute</option>
+
+              </select>
+            </div>
+          </div>
+          <!-- Proof of Address Input-->
+          <div class="form-group required" >
+            <label class="col-sm-3 control-label" for="code">${Proof of Address} <i class="fa fa-info-circle" title="Require proof of address for Data Subject"></i></label>
+            <div class="col-sm-6">
+              <select ng-model="c.proofOfAddress" class="form-control">
+                <option value selected disabled>Please select and option</option>                
+                <option name="utility_bill">Utility or Local authority bill(Issued in last 3 months)</option>    
+                <option name="vehicle_registration">Current Vehicle Registration Document</option> 
+                <option name="mortgage_sl_statement">Mortgage or student loan statement(Issued in last 12 months)</option>  
+                <option name="hrmc">Correspondence from HMRC(Issued this financial year)</option>
+                <option name="dr_license">Valid photocard Driving Licence(if not used for proof of identity)</option>
+
+              </select>
+            </div>
+          </div>
+
+             <!-- Proof of Ownership-->
+      <div class="form-group required" ng-if="c.reqSearchesOnVRN=='Yes'">
+            <label class="col-sm-3 control-label" for="full_name">${Proof of Ownership}</label>
+            <div class="col-sm-6">
+              <input ng-model="c.proof_of_ownership" id="proof_of_ownership" name="proof_of_ownership" placeholder="${Proof of Ownership}" class="form-control"  ng-required="true">
+            </div>
+          </div>
+
+        </div>
+
+        <div ng-switch-default>
+
+          <!-- Proof of Identity required-->
+          <div class="form-group required"  ng-show="c.deceased == 'Yes'">
+            <label class="col-sm-3 control-label" for="solicitor">${Proof of Identity required}</label>
+            <div class="col-sm-6">
+              <input ng-model="c.proofidentityRequired" id="solicitor" name="solicitor" placeholder="${Proof of Identity required}" class="form-control" ng-required="true">
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- Proof of Identity required-->
+      <div class="form-group required"  ng-show="c.deceased == 'Yes'">
+        <label class="col-sm-3 control-label" for="solicitor">${Proof of Identity required}</label>
+        <!--<div class="col-sm-6">
+<input ng-model="c.proofidentityRequired" id="solicitor" name="solicitor" placeholder="${Proof of Identity required}" class="form-control" ng-required="true">
+</div>-->
+
+        <div class="col-sm-6">
+          <select ng-model="c.proofidentityRequired" class="form-control" ng-required="true">              
+            <option value="death_certificate">Death Dertificate</option> 
+
+          </select>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+
+
+
+  <div class = "container ">
+
+    <div class="row">
+      <div class="col-12 col-md-8 instructions">
+        <a href="#demo" class="top-menu" data-toggle="collapse"><span class = "glyphicon glyphicon-chevron-right"></span>Instructions</a>
+        <div id="demo" class="collapse">
+          <br>
+          Please attach relevant documents by selecting the 'Choose File' option and then pressing 'Add Attachment'.
+        </div>
+      </div>
+      <div class="col-6 col-md-4 instructions "> 
+        <label style="float:right;font-weight:normal;cursor:pointer;">     
+
+          <span class="file-upload-input"><input type="file" style="display: none" multiple="true" ng-file-select="attachmentHandler.onFileSelect($files)" class="sp-attachments-input"><button title="Add attachment" ng-click="attachmentHandler.openSelector($event)" class="panel-button sp-attachment-add btn btn-link" aria-label="Add attachment"><span class="glyphicon glyphicon-paperclip"></span></button></span>
+          <span class="required" style="padding-left:4px;">Add attachments</span>
+        </label>
+
+
+
+      </div>
+
+    </div>
+  </div>
+
+
+
+
+  <!-- Privacy Policy & Terms conditions -->
+  <div class="form-group col-sm-12 input-group-checkbox required">
+    <div class="col-sm-12 form_link" tabindex="0">
+      <label class="col-sm-3 control-label hide-label" for="checkbox_agree">Privacy Policy</label>
+      <input ng-model="c.policy" id="checkbox_agree" class="checkbox_agree" type="checkbox" name="policy" ng-required="true">
+      I agree to the <a href="/sn_customerservice_registration_privacy_policy_doc.do" target="_blank">Privacy Policy</a>
+      and<a href="/sn_customerservice_registration_terms_doc.do" target="_blank">Terms and Conditions</a>
+    </div>
+  </div>
+  <!--<input id="sitekey" type="hidden" value={{c.data.captchaSiteKey}}>  -->
+
+
+  <div class="form-group col-sm-12 text-center submitBtn">
+    <!--  data.status == 'success' ||  -->
+    <button type="submit"   class="btn btn-primary center" ng-click="isFormValid()" >${Submit Form}</button>
+  </div>
+
+
+</form>
+
+
+<!-- Modal -->
+<div class="modal fade" id="verification-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+
+  <div class="modal-dialog">
+    <div class="loginmodal-container">
+
+      <h1>Email Verification</h1><br>
+      <div class="test"> 
+        An eamil verification code was just sent to <span style="font-weight: bold;" >{{c.confirm}}</span>
+      </div>
+      <form>
+        <input type="text" name="Verification Code" placeholder="Enter the code" ng-model="c.enterTheCode">       
+        <input type="submit" name="next" class="login loginmodal-submit" value="Next" ng-click="verificationCode()">
+      </form>
+
+      <div class="login-help">
+        <a href="javascript:void(0)">Didn't get the code</a> - <a href="javascript:void(0)">Resend it</a>
+      </div>				
+
+    </div>
+  </div>
+
+</div>
+
+
+
+]]></template>
+</sp_widget>
+</unload>
